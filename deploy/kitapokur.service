@@ -1,0 +1,22 @@
+# Raspberry Pi'de açılışta otomatik başlatma.
+# Kurulum:
+#   sudo cp deploy/kitapokur.service /etc/systemd/system/
+#   (User ve yolları kendi kurulumuna göre düzenle)
+#   sudo systemctl daemon-reload && sudo systemctl enable --now kitapokur
+[Unit]
+Description=KitapOkur PDF okuyucu
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/KitapOkur
+Environment=KITAPOKUR_DATA=/home/pi/KitapOkur/data
+ExecStart=/home/pi/KitapOkur/run.sh
+Restart=on-failure
+RestartSec=3
+# Okuma isteklerini PDF işlemeye göre öncelikli tut.
+Nice=0
+
+[Install]
+WantedBy=multi-user.target

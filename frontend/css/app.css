@@ -1,0 +1,174 @@
+/* KitapOkur ortak stilleri */
+
+@font-face { font-family: "Literata"; font-style: normal; font-weight: 200 900; font-display: swap;
+  src: url("/vendor/fonts/literata-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Literata"; font-style: normal; font-weight: 200 900; font-display: swap;
+  src: url("/vendor/fonts/literata-latin-ext-wght-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Literata"; font-style: italic; font-weight: 200 900; font-display: swap;
+  src: url("/vendor/fonts/literata-latin-wght-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Literata"; font-style: italic; font-weight: 200 900; font-display: swap;
+  src: url("/vendor/fonts/literata-latin-ext-wght-italic.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "IBM Plex Sans"; font-weight: 400; font-display: swap;
+  src: url("/vendor/fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "IBM Plex Sans"; font-weight: 400; font-display: swap;
+  src: url("/vendor/fonts/ibm-plex-sans-latin-ext-400-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "IBM Plex Sans"; font-weight: 500; font-display: swap;
+  src: url("/vendor/fonts/ibm-plex-sans-latin-500-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "IBM Plex Sans"; font-weight: 500; font-display: swap;
+  src: url("/vendor/fonts/ibm-plex-sans-latin-ext-500-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "IBM Plex Sans"; font-weight: 600; font-display: swap;
+  src: url("/vendor/fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "IBM Plex Sans"; font-weight: 600; font-display: swap;
+  src: url("/vendor/fonts/ibm-plex-sans-latin-ext-600-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+
+:root {
+  --bg: #F4F5F2;
+  --bg-sunk: #E9EBE6;
+  --surface: #FFFFFF;
+  --line: #E2E4DF;
+  --line-strong: #CDD1CB;
+  --ink: #1A1D1F;
+  --ink-2: #3D444A;
+  --ink-3: #5A6168;
+  --accent: #0E6B5A;
+  --accent-hover: #0A5446;
+  --accent-soft: #E3F0EC;
+  --amber: #9A4F0F;
+  --amber-soft: #F8EBDD;
+  --danger: #A3271F;
+  --danger-soft: #FBE9E7;
+  --dark: #1A1D1F;
+  --dark-2: #2A2F33;
+  --mint: #9FD6C8;
+  --serif: "Literata", Georgia, "Times New Roman", serif;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius: 10px;
+  --shadow-page: 0 1px 2px rgba(26, 29, 31, .08), 0 12px 32px rgba(26, 29, 31, .10);
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+}
+a { color: var(--accent); }
+a:hover { color: var(--accent-hover); }
+img { display: block; max-width: 100%; }
+[hidden] { display: none !important; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* --- Düğmeler --------------------------------------------------------- */
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 0 18px;
+  border: 1px solid transparent; border-radius: var(--radius);
+  font: inherit; font-weight: 600; font-size: 15px; text-decoration: none;
+  cursor: pointer; white-space: nowrap;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.btn svg { flex: none; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); color: #fff; }
+.btn-ghost { background: var(--surface); border-color: var(--line-strong); color: var(--ink); }
+.btn-ghost:hover { background: var(--bg); color: var(--ink); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: #861F19; }
+.btn:disabled { opacity: .5; cursor: default; }
+
+.icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; flex: none;
+  border: 1px solid var(--line-strong); border-radius: var(--radius);
+  background: var(--surface); color: var(--ink);
+  font: inherit; cursor: pointer;
+}
+.icon-btn:hover { background: var(--bg); }
+.icon-btn:disabled { opacity: .4; cursor: default; }
+.icon-btn.plain { border-color: transparent; background: transparent; color: var(--ink-2); }
+.icon-btn.plain:hover { background: var(--bg-sunk); }
+
+/* --- Üst bar ------------------------------------------------------------ */
+
+.topbar { background: var(--surface); border-bottom: 1px solid var(--line); }
+.brand {
+  display: flex; align-items: center; gap: 10px; color: var(--accent); text-decoration: none;
+}
+.brand span { font-family: var(--serif); font-size: 22px; font-weight: 600; color: var(--ink); }
+
+/* --- Diyaloglar ve bildirimler ------------------------------------------ */
+
+dialog {
+  width: min(440px, calc(100vw - 32px));
+  border: 0; border-radius: 16px; padding: 24px;
+  background: var(--surface); color: var(--ink);
+  box-shadow: 0 24px 64px rgba(26, 29, 31, .28);
+}
+dialog::backdrop { background: rgba(26, 29, 31, .45); }
+dialog h2 { margin: 0 0 8px; font-family: var(--serif); font-size: 22px; font-weight: 600; }
+dialog p { margin: 0 0 20px; color: var(--ink-3); }
+dialog .actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; font-size: 14px; color: var(--ink-2); }
+.field input, .field textarea {
+  height: 44px; padding: 0 12px;
+  border: 1px solid var(--line-strong); border-radius: 8px;
+  font: inherit; font-size: 15px; color: var(--ink); background: var(--surface);
+}
+.field textarea { height: auto; min-height: 72px; padding: 10px 12px; resize: vertical; line-height: 1.45; }
+.field .hint { font-size: 13px; color: var(--ink-3); }
+
+.toasts {
+  position: fixed; z-index: 50; left: 16px; right: 16px; bottom: 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none;
+}
+.toast {
+  width: min(420px, 100%);
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 12px 16px; border-radius: 12px;
+  background: var(--dark); color: #F4F5F2; font-size: 14px;
+  box-shadow: 0 12px 32px rgba(26, 29, 31, .3);
+  pointer-events: auto;
+}
+.toast.error { background: var(--danger); }
+.toast .row { display: flex; justify-content: space-between; gap: 12px; }
+.toast .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toast .bar { height: 4px; border-radius: 99px; background: rgba(255, 255, 255, .2); overflow: hidden; }
+.toast .bar > div { height: 100%; width: 0; background: var(--mint); transition: width .2s; }
+
+.progress { height: 6px; background: var(--bg-sunk); border-radius: 99px; overflow: hidden; }
+.progress > div { height: 100%; background: var(--accent); border-radius: 99px; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+.toast .row { align-items: center; }
+.toast-action {
+  flex: none; font: inherit; font-weight: 600; font-size: 14px; min-height: 36px; padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, .35); border-radius: 8px; background: transparent; color: var(--mint); cursor: pointer;
+}
+.toast-action:hover { background: rgba(255, 255, 255, .08); }

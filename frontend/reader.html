@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FFFFFF">
+<title>Okur</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Okur">
+<link rel="modulepreload" href="/vendor/pdfjs/pdf.min.mjs">
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="/css/reader.css">
+<script type="module" src="/js/reader.js"></script>
+</head>
+<body>
+<header class="topbar reader-bar">
+  <div class="reader-bar-inner">
+    <div class="book-id">
+      <a class="back" href="/">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>Kütüphane</span>
+      </a>
+      <div class="titles">
+        <div class="book-title">Yükleniyor…</div>
+        <div class="book-author"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button type="button" class="icon-btn" id="prev" aria-label="Önceki sayfa" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <form class="page-form" id="page-form">
+        <label for="page-input">Sayfa</label>
+        <input id="page-input" inputmode="numeric" pattern="[0-9]*" autocomplete="off" value="–" readonly>
+        <span id="page-total">/ –</span>
+      </form>
+      <button type="button" class="icon-btn" id="next" aria-label="Sonraki sayfa" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <div class="divider" aria-hidden="true"></div>
+      <button type="button" class="icon-btn plain" id="zoom-out" aria-label="Uzaklaştır">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>
+      </button>
+      <button type="button" class="zoom-level" id="zoom-reset" title="Sayfa genişliğine sığdır">%100</button>
+      <button type="button" class="icon-btn plain" id="zoom-in" aria-label="Yakınlaştır">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+      </button>
+    </div>
+
+    <div class="bar-end">
+      <div class="save-state" id="save-state" role="status" aria-live="polite"></div>
+      <button type="button" class="btn btn-ghost panel-toggle" id="toc-toggle" aria-controls="toc" aria-expanded="false" hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11"/><path d="M9 12h11"/><path d="M9 18h11"/><path d="M4 6h.01"/><path d="M4 12h.01"/><path d="M4 18h.01"/></svg>
+        <span class="label-text">İçindekiler</span>
+      </button>
+      <button type="button" class="btn btn-ghost panel-toggle" id="panel-toggle" aria-controls="panel" aria-expanded="false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+        <span class="label-text">Kelimeler</span>
+        <span class="badge" id="panel-badge" hidden></span>
+      </button>
+    </div>
+  </div>
+  <div class="read-progress" aria-hidden="true"><div id="read-progress"></div></div>
+</header>
+
+<div class="reader-body">
+  <nav class="toc" id="toc" aria-label="İçindekiler" hidden>
+    <div class="toc-head">
+      <h2>İçindekiler</h2>
+      <button type="button" class="icon-btn plain" id="toc-close" aria-label="İçindekileri kapat">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <p class="toc-source" id="toc-source" hidden></p>
+    <ol class="toc-list" id="toc-list"></ol>
+  </nav>
+
+  <main class="viewer" id="viewer" tabindex="-1">
+    <div class="pages" id="pages"></div>
+    <div class="viewer-message" id="viewer-message" hidden></div>
+  </main>
+
+  <aside class="panel" id="panel" aria-label="Kelime paneli" hidden>
+    <div class="panel-head">
+      <div class="tabs" role="tablist" aria-label="Kelime listeleri">
+        <button type="button" role="tab" id="tab-page" aria-controls="view-page" aria-selected="true">Bu sayfa <span class="tab-count"></span></button>
+        <button type="button" role="tab" id="tab-book" aria-controls="view-book" aria-selected="false" tabindex="-1">Tüm kitap <span class="tab-count"></span></button>
+        <button type="button" role="tab" id="tab-deck" aria-controls="view-deck" aria-selected="false" tabindex="-1">Destem <span class="tab-count"></span></button>
+      </div>
+      <button type="button" class="icon-btn plain panel-close" id="panel-close" aria-label="Paneli kapat">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="panel-body" id="panel-body">
+      <section class="word-card" id="word-card" aria-live="polite" hidden></section>
+      <div class="panel-notice" id="panel-notice" hidden></div>
+
+      <div role="tabpanel" id="view-page" aria-labelledby="tab-page" class="view">
+        <div class="view-head">
+          <h2>Bu sayfadaki yeni kelimeler</h2>
+          <label class="level">Seviye
+            <select id="level-select">
+              <option value="A2">A2 · temel</option>
+              <option value="B1">B1 · orta</option>
+              <option value="B2">B2 · orta üstü</option>
+              <option value="C1">C1 · ileri</option>
+            </select>
+          </label>
+        </div>
+        <ul class="word-list" id="list-page"></ul>
+      </div>
+
+      <div role="tabpanel" id="view-book" aria-labelledby="tab-book" class="view" hidden>
+        <div class="view-head">
+          <h2>Kitaptaki yeni kelimeler</h2>
+          <label class="level">Sırala
+            <select id="book-sort">
+              <option value="count">En sık geçen</option>
+              <option value="rare">En nadir</option>
+              <option value="page">Kitaptaki sıra</option>
+              <option value="alpha">A–Z</option>
+            </select>
+          </label>
+        </div>
+        <ul class="word-list" id="list-book"></ul>
+        <button type="button" class="btn btn-ghost more" id="book-more" hidden>Daha fazla göster</button>
+      </div>
+
+      <div role="tabpanel" id="view-deck" aria-labelledby="tab-deck" class="view" hidden>
+        <div class="view-head">
+          <h2>Öğrenmek için seçtiklerin</h2>
+          <a class="link-btn" id="deck-study" href="/study.html">Bu kitabın destesini çalış</a>
+        </div>
+        <ul class="word-list" id="list-deck"></ul>
+        <button type="button" class="btn btn-ghost more" id="deck-more" hidden>Daha fazla göster</button>
+      </div>
+    </div>
+  </aside>
+</div>
+</body>
+</html>

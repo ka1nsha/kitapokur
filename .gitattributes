@@ -1,0 +1,9 @@
+# Pi'de çalışan betikler (run.sh) Windows'ta da LF satır sonuyla kalsın.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.woff2 binary
+*.bcmap binary
+*.pfb binary
+*.ttf binary
+*.wasm binary

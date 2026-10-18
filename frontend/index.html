@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FFFFFF">
+<title>Okur · Kütüphane</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Okur">
+<link rel="preload" href="/vendor/fonts/literata-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="/css/library.css">
+<script type="module" src="/js/library.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/></svg>
+      <span>Okur</span>
+    </a>
+    <nav class="main-nav" aria-label="Ana menü">
+      <a href="/" aria-current="page">Kütüphane</a>
+      <a href="/study.html">Çalış <span class="badge" id="nav-due" hidden></span></a>
+      <a href="/cards.html">Kartlar</a>
+    </nav>
+    <a class="profile-chip" id="profile-chip" href="/profiles.html" hidden title="Profil değiştir">
+      <span class="avatar-sm" aria-hidden="true"></span>
+      <span class="chip-name"></span>
+    </a>
+    <label class="btn btn-primary">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 20h16"/></svg>
+      <span class="label-text">PDF yükle</span>
+      <input class="visually-hidden file-input" type="file" accept="application/pdf,.pdf" multiple>
+    </label>
+  </div>
+</header>
+
+<main class="library">
+  <div class="top-row">
+    <section id="continue" class="continue" hidden aria-labelledby="continue-title"></section>
+    <section id="today" class="today" hidden aria-labelledby="today-title"></section>
+  </div>
+
+  <section class="shelf" aria-labelledby="shelf-title">
+    <div class="shelf-head">
+      <h1 id="shelf-title">Kitaplarım</h1>
+      <div class="sort" role="group" aria-label="Sıralama">
+        <button type="button" data-sort="recent" aria-pressed="true">Son okunan</button>
+        <button type="button" data-sort="progress" aria-pressed="false">İlerleme</button>
+        <button type="button" data-sort="title" aria-pressed="false">Başlık</button>
+      </div>
+    </div>
+    <div id="grid" class="grid" aria-busy="true"></div>
+  </section>
+</main>
+
+<div class="drop-overlay" hidden>
+  <div>
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 20h16"/></svg>
+    PDF'i bırak, kütüphaneye eklensin
+  </div>
+</div>
+
+<dialog id="rename-dialog">
+  <form method="dialog">
+    <h2>Kitap bilgileri</h2>
+    <label class="field">Başlık
+      <input name="title" required maxlength="300" autocomplete="off">
+    </label>
+    <label class="field">Yazar
+      <input name="author" maxlength="300" autocomplete="off">
+    </label>
+    <div class="actions">
+      <button type="button" class="btn btn-ghost" data-close>Vazgeç</button>
+      <button class="btn btn-primary" value="save">Kaydet</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="delete-dialog">
+  <form method="dialog">
+    <h2>Kitap silinsin mi?</h2>
+    <p class="delete-text"></p>
+    <div class="actions">
+      <button type="button" class="btn btn-ghost" data-close>Vazgeç</button>
+      <button class="btn btn-danger" value="delete">Sil</button>
+    </div>
+  </form>
+</dialog>
+</body>
+</html>

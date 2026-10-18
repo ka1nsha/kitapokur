@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FFFFFF">
+<title>Okur · Kelime çalışma</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Okur">
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="/css/study.css">
+<script type="module" src="/js/study.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="study-bar">
+    <div class="study-bar-left">
+      <a class="back" href="/">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>Kütüphane</span>
+      </a>
+      <h1>Kelime çalışma</h1>
+      <label class="select-label">Deste
+        <select id="deck-select">
+          <option value="">Tüm kitaplar</option>
+        </select>
+      </label>
+      <label class="select-label">Günlük yeni
+        <select id="new-per-day">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+          <option value="50">50</option>
+        </select>
+      </label>
+    </div>
+    <div class="bar-actions">
+      <a class="btn btn-ghost" href="/cards.html">Kartlar</a>
+      <a class="btn btn-ghost" href="/">Oturumu bitir</a>
+    </div>
+  </div>
+</header>
+
+<main class="study">
+  <div class="session">
+    <div class="session-row">
+      <span class="session-done" id="session-done">0 kart</span>
+      <span class="session-counts">
+        <span>Yeni <strong class="c-new" id="c-new">0</strong></span>
+        <span>Öğreniyor <strong class="c-learn" id="c-learn">0</strong></span>
+        <span>Tekrar <strong class="c-review" id="c-review">0</strong></span>
+      </span>
+    </div>
+    <div class="progress session-bar"><div id="session-bar"></div></div>
+  </div>
+
+  <div class="modes" role="group" aria-label="Alıştırma türü">
+    <button type="button" data-mode="classic" aria-pressed="true">Klasik kart</button>
+    <button type="button" data-mode="reverse" aria-pressed="false">Tersten (TR → EN)</button>
+    <button type="button" data-mode="cloze" aria-pressed="false">Boşluk doldurma</button>
+    <button type="button" data-mode="mixed" aria-pressed="false">Karışık</button>
+  </div>
+
+  <section class="flashcard" id="flashcard" aria-live="polite" hidden></section>
+  <section class="study-message" id="study-message" hidden></section>
+
+  <p class="footnote">Aralıklar FSRS algoritmasıyla hesaplanır: zorlandığın kelimeler daha sık, iyi bildiklerin daha seyrek gelir.
+    <span class="keys">Kısayollar: <kbd>Boşluk</kbd> cevabı göster, <kbd>1</kbd>–<kbd>4</kbd> puanla, <kbd>S</kbd> dinle.</span><br>
+    Örnek cümleler <a href="https://tatoeba.org" rel="noopener">Tatoeba</a> (CC-BY 2.0 FR), tanımlar
+    <a href="https://en.wiktionary.org" rel="noopener">Wiktionary</a> (CC-BY-SA) kaynaklıdır.</p>
+</main>
+</body>
+</html>

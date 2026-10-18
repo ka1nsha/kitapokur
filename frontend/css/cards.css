@@ -1,0 +1,84 @@
+.bar-actions { display: flex; gap: 8px; }
+
+.cards-page {
+  width: 100%; max-width: 860px; margin: 0 auto; padding: 24px 20px 56px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+.search {
+  flex: 1 1 260px; display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px;
+  border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface); color: var(--ink-3);
+}
+.search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.search input {
+  flex: 1; min-width: 0; height: 100%; border: 0; outline: none; background: transparent;
+  font: inherit; font-size: 15px; color: var(--ink);
+}
+
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filters button {
+  font: inherit; font-size: 14px; min-height: 40px; padding: 0 14px; border-radius: 99px;
+  border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-2); cursor: pointer;
+}
+.filters button span { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.filters button span:not(:empty)::before { content: "· "; }
+.filters button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.filters button[aria-pressed="true"] span { color: #C9CDD0; }
+
+.card-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.card-row {
+  font: inherit; width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 16px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--surface); color: var(--ink); cursor: pointer;
+}
+.card-row:hover { border-color: var(--line-strong); background: #FBFBFA; }
+.card-row.is-suspended { opacity: .65; }
+.card-row .main { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.card-row .line1 { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
+.card-row .lemma { font-family: var(--serif); font-size: 19px; font-weight: 600; overflow-wrap: anywhere; }
+.card-row .tr { font-size: 15px; color: var(--ink-2); overflow-wrap: anywhere; }
+.card-row .sentence {
+  font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--ink-3);
+  overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;
+}
+.card-row .meta { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 13px; color: var(--ink-3); }
+.card-row .lapses { color: #A1281C; }
+.card-row .side { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.card-row .due { font-size: 13px; color: var(--ink-3); white-space: nowrap; }
+
+.chip { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+.chip.new { background: #E4EDF8; color: #1F5FA8; }
+.chip.learning { background: var(--amber-soft); color: var(--amber); }
+.chip.review { background: var(--accent-soft); color: var(--accent); }
+.chip.suspended { background: var(--bg-sunk); color: var(--ink-2); }
+
+.list-empty {
+  padding: 32px 20px; text-align: center; border: 1px dashed var(--line-strong); border-radius: 12px;
+  color: var(--ink-3); font-size: 15px;
+}
+.more { align-self: center; }
+
+/* --- Diyaloglar ---------------------------------------------------------- */
+
+#edit-dialog, #add-dialog { width: min(520px, calc(100vw - 32px)); }
+.edit-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+.edit-head h2 { margin: 0; font-size: 28px; overflow-wrap: anywhere; }
+dialog p.edit-meta { margin-bottom: 16px; font-size: 14px; }
+.card-tools { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px; }
+.card-tools .btn { min-height: 40px; padding: 0 14px; font-size: 14px; font-weight: 500; }
+.card-tools .danger { color: var(--danger); }
+.card-tools .confirming { background: var(--danger); border-color: var(--danger); color: #fff; }
+.card-tools .confirming:hover { background: #861F19; color: #fff; }
+dialog .actions { border-top: 1px solid var(--line); padding-top: 16px; }
+.form-error { color: var(--danger) !important; margin: 0 0 4px !important; font-size: 14px; }
+
+@media (max-width: 600px) {
+  .cards-page { padding: 14px 12px 40px; gap: 12px; }
+  .bar-actions .btn-ghost { display: none; }
+  .toolbar .select-label { flex: 1 1 40%; }
+  .toolbar .select-label select { max-width: none; width: 100%; }
+  .card-row { padding: 12px; gap: 10px; }
+  .card-row .lemma { font-size: 17px; }
+  dialog { padding: 20px 18px; }
+}
