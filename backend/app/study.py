@@ -309,10 +309,14 @@ def summary(user_id: int) -> dict:
     learning_total = conn.execute(
         "SELECT COUNT(*) FROM cards WHERE user_id = ? AND suspended = 0", (user_id,)
     ).fetchone()[0]
-    mature = conn.execute(
-        "SELECT COUNT(*) FROM cards WHERE user_id = ? AND suspended = 0 AND state = 2 AND due - ? > 21 * 86400",
-        (user_id, int(time.time())),
-    ).fetchone()[0]
+    # Anki'deki gibi: tekrar aralığı (son tekrardan sonraki tekrara) 21 günü geçen kartlar.
+    mature = 0
+    for row in conn.execute(
+        "SELECT due, fsrs FROM cards WHERE user_id = ? AND suspended = 0 AND state = 2", (user_id,)
+    ):
+        last = json.loads(row["fsrs"]).get("last_review") if row["fsrs"] else None
+        if last and row["due"] - datetime.fromisoformat(last).timestamp() >= 21 * 86400:
+            mature += 1
     known = conn.execute(
         "SELECT COUNT(*) FROM word_status WHERE user_id = ? AND status = 'known'", (user_id,)
     ).fetchone()[0]

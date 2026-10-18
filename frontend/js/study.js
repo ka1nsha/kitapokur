@@ -18,6 +18,7 @@ const state = {
   options: [],     // çoktan seçmeli şıklar (karışık sırada)
   picked: null,    // seçilen şıkkın sırası
   shownAt: 0,
+  loadSeq: 0,
   done: 0,
   busy: false,
   waitTimer: null,
@@ -109,7 +110,10 @@ function sentenceWithWord(card, { blank = false } = {}) {
   const [before, word, after] = card.cloze;
   return h("p", { class: "sentence", lang: "en" },
     before,
-    blank ? h("span", { class: "blank", "aria-label": "boşluk" }, word) : h("strong", {}, word),
+    // Ekran okuyucu boşluktaki (görünmez) kelimeyi değil "boşluk" sözünü okur.
+    blank
+      ? h("span", { class: "blank" }, h("span", { class: "visually-hidden" }, "boşluk"), h("span", { "aria-hidden": "true" }, word))
+      : h("strong", {}, word),
     after);
 }
 
@@ -198,7 +202,7 @@ const RATINGS = [
 // Doğru şık "İyi", yanlış şık "Tekrar" sayılır; tahminle bilinen doğru cevap "Zor" işaretlenebilir.
 function renderChoices(card) {
   const done = state.picked !== null;
-  const list = h("div", { class: "choices", role: "group", "aria-label": "Doğru anlamı seç" },
+  const list = h("div", { class: "choices", role: "group", "aria-label": "Doğru anlamı seç", tabindex: "-1" },
     state.options.map((o, i) => {
       let cls = "choice";
       if (done && o.correct) cls += " correct";
@@ -271,7 +275,8 @@ function show(data) {
     prepare(data.card);
     state.shownAt = performance.now();
     render();
-    ($("reveal") || cardEl.querySelector(".choice"))?.focus({ preventScroll: true });
+    // Çoktan seçmelide odak ilk şıkka değil gruba gider; art arda Enter yanlışlıkla şık seçmesin.
+    ($("reveal") || cardEl.querySelector(".choices"))?.focus({ preventScroll: true });
     return;
   }
   state.card = null;
@@ -286,8 +291,11 @@ function show(data) {
 }
 
 async function finished() {
+  const seq = state.loadSeq;
   let summary = null;
   try { summary = await api.studySummary(); } catch { /* özet olmadan da gösterilebilir */ }
+  // Bu arada deste değiştirilip yeni kart geldiyse eski mesaj gösterilmez.
+  if (seq !== state.loadSeq || state.card) return;
   if (summary && summary.learning_total === 0) {
     showMessage("Desten henüz boş",
       "Okurken bir kelimeye dokunup “Öğren” dediğinde buraya kart olarak eklenir.",
@@ -313,10 +321,12 @@ function showMessage(title, text, { link = false, summary = null } = {}) {
 }
 
 async function load() {
+  const seq = ++state.loadSeq;
   try {
-    show(await api.studyNext(state.book));
+    const data = await api.studyNext(state.book);
+    if (seq === state.loadSeq) show(data);
   } catch (err) {
-    showMessage("Kartlar yüklenemedi", err.message, { link: true });
+    if (seq === state.loadSeq) showMessage("Kartlar yüklenemedi", err.message, { link: true });
   }
 }
 
@@ -331,7 +341,13 @@ async function answer(rating) {
     show(data);
   } catch (err) {
     toast(`Kaydedilemedi: ${err.message}`, { error: true });
-    cardEl.querySelectorAll(".rate, .next").forEach((b) => { b.disabled = false; });
+    if (err.status === 404) {
+      // Kart başka bir sekmede silinmiş ya da askıya alınmış: sıradakine geç.
+      load();
+    } else {
+      cardEl.querySelectorAll(".rate, .next").forEach((b) => { b.disabled = false; });
+      cardEl.querySelector(".rate.good, .choice-actions .btn-primary")?.focus({ preventScroll: true });
+    }
   } finally {
     state.busy = false;
   }
@@ -343,7 +359,9 @@ function setMode(mode) {
   state.mode = mode;
   writePref("okur.studyMode", mode);
   document.querySelectorAll(".modes button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
-  if (state.card) {
+  // Cevap görüldükten sonra tür değişirse bu kart sıfırlanmaz (yanlış bilinen
+  // kart "İyi" diye puanlanabilirdi); yeni tür sonraki karttan başlar.
+  if (state.card && !state.revealed && state.picked === null) {
     prepare(state.card);
     render();
   }
@@ -372,6 +390,10 @@ newPerDay.addEventListener("change", async () => {
 
 document.addEventListener("keydown", (e) => {
   if (e.ctrlKey || e.metaKey || e.altKey || e.target.closest("input, select, textarea")) return;
+  // Basılı tutulan Enter/Boşluk art arda cevap göstermesin ya da şık seçmesin.
+  if (e.repeat && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); return; }
+  // Odak bir düğmede ya da bağlantıdaysa Enter/Boşluk onun işini yapar (tür seçimi, menü…).
+  if ((e.key === "Enter" || e.key === " ") && e.target.closest("button, a") && e.target.id !== "reveal") return;
   if (state.card && state.shownMode === "choice") {
     // 1–4 şık seçer; seçimden sonra Enter/Boşluk "Devam" eder (odak o düğmede).
     if (state.picked === null && ["1", "2", "3", "4"].includes(e.key)) {

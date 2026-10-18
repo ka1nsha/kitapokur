@@ -123,7 +123,8 @@ def word_details(word_id: int) -> dict:
         except net.NetError:
             complete = False
         dict_data = dict_future.result()
-        if dict_data.get("source") is None:
+        # Sözlükte olmayan kelime de kesin bir sonuçtur; her açılışta yeniden sorulmaz.
+        if dict_data.get("source") is None and not dict_data.get("missing"):
             complete = False
         fetched = {
             "phonetic": dict_data.get("phonetic"),

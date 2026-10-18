@@ -421,3 +421,17 @@ body { display: flex; flex-direction: column; overflow: hidden; background: var(
 :root[data-reading="night"] .hl-layer .w.learning { background: rgba(92, 194, 168, .16); box-shadow: inset 0 -2px 0 rgba(92, 194, 168, .8); }
 :root[data-reading="night"] .hl-layer .w.selected { background: rgba(92, 194, 168, .32); box-shadow: inset 0 -3px 0 var(--accent); }
 :root[data-reading="night"] .textLayer ::selection { background: rgba(92, 194, 168, .35); }
+:root[data-reading="night"] .badge { color: #1A1D20; }
+:root[data-reading="night"] .toast.error { background: var(--danger-soft); color: var(--danger); }
+
+/* Arama sonuçları ya da görünüm menüsü açıkken üst bar, telefonda alttan
+   açılan kelime panelinin ve içindekilerin üstünde kalır. */
+.reader-bar:has(.search-results:not([hidden]), .theme-pop:not([hidden])) { z-index: 25; }
+
+/* 360–400 px telefonlarda sayfa kontrolleri tek satıra sığsın. */
+@media (max-width: 400px) {
+  .zoom-level { display: none; }
+  .controls { gap: 2px; }
+  .page-form { gap: 4px; }
+  .page-form input { width: 52px; }
+}

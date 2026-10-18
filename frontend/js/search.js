@@ -21,7 +21,8 @@ export function createSearch({ bookId, goTo, currentPosition, renderedPages }) {
     boxes: new Map(),   // sayfa → Promise<kutular>
     origin: null,       // arama açıldığında okunan yer
     moved: false,
-    seq: 0,
+    seq: 0,             // arama değişince artar (eski istekler atılır)
+    nav: 0,             // sonuçlar arasında her gezinmede artar
   };
 
   function isOpen() { return !bar.hidden; }
@@ -39,6 +40,8 @@ export function createSearch({ bookId, goTo, currentPosition, renderedPages }) {
 
   function close() {
     if (!isOpen()) return;
+    // Odak gizlenen kutuda kalmasın.
+    if (bar.contains(document.activeElement)) toggle.focus();
     bar.hidden = true;
     toggle.setAttribute("aria-expanded", "false");
     showList(false);
@@ -161,9 +164,11 @@ export function createSearch({ bookId, goTo, currentPosition, renderedPages }) {
     current?.setAttribute("aria-current", "true");
     current?.scrollIntoView({ block: "nearest" });
 
+    // Art arda tıklamada yalnızca son seçilen sonuca gidilir.
     const seq = state.seq;
+    const nav = ++state.nav;
     const boxes = await boxesFor(it.page);
-    if (seq !== state.seq) return;
+    if (seq !== state.seq || nav !== state.nav) return;
     const box = boxes[Math.min(rankOnPage(state.index), boxes.length - 1)];
     // Sonuç ekranın üst kısmına, biraz boşlukla gelir.
     goTo(it.page, box ? Math.max(0, box[1] - 0.06) : 0);

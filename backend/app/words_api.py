@@ -382,6 +382,9 @@ def set_status(word_id: int, body: StatusUpdate, user: CurrentUser) -> dict:
     with transaction() as tx:
         if tx.execute("SELECT 1 FROM words WHERE id = ?", (word_id,)).fetchone() is None:
             raise HTTPException(404, "Kelime bulunamadı.")
+        book_id = body.book_id
+        if book_id and tx.execute("SELECT 1 FROM books WHERE id = ?", (book_id,)).fetchone() is None:
+            book_id = None  # kitap bu arada silinmiş; kart kitapsız oluşturulur
         if body.status == "new":
             tx.execute("DELETE FROM word_status WHERE user_id = ? AND word_id = ?", (user, word_id))
         else:
@@ -391,7 +394,7 @@ def set_status(word_id: int, body: StatusUpdate, user: CurrentUser) -> dict:
                 (user, word_id, body.status, int(time.time())),
             )
         if body.status == "learning":
-            study.ensure_card(tx, user, word_id, body.book_id, page, sentence)
+            study.ensure_card(tx, user, word_id, book_id, page, sentence)
         else:
             study.suspend_card(tx, user, word_id)
     if body.status == "learning":

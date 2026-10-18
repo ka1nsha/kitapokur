@@ -27,8 +27,9 @@ Web adresleri yeni sekmede açılır.
   numarası ve çevresindeki metinle listelenir, eşleşmeler sayfada turuncu
   işaretlenir. <kbd>Enter</kbd> sonraki, <kbd>Shift</kbd>+<kbd>Enter</kbd> önceki
   sonuç. Büyük/küçük harf ve kesme işaretinin türü (' ’) fark etmez. Arama
-  kapanınca **Okuduğun yere dön** ile aramadan önceki yere dönülür. Liste
-  kelime çıkarırken saklanan cümlelerden gelir; Pi'de de anında çıkar.
+  kapanınca **Okuduğun yere dön** ile aramadan önceki yere dönülür. Liste,
+  kelime çıkarırken kaydedilen sayfa metinlerinden gelir (eski kitaplarda ilk
+  aramada bir kez hazırlanır); Pi'de de anında çıkar.
 - **Seçili metni çevir:** sayfada bir cümle ya da paragraf seçince altında
   **Çevir** düğmesi çıkar (en fazla 1500 karakter). Telefonda çeviri alttan açılır.
 - **Okuma görünümü** (yarım daire simgesi): Açık, Sepya, Gece. PDF sayfası bir

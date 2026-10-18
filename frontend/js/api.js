@@ -8,7 +8,11 @@ async function request(method, url, body) {
   }
   const res = await fetch(url, opts);
   if (res.status === 401) goToProfiles();
-  if (!res.ok) throw new Error(await errorMessage(res));
+  if (!res.ok) {
+    const err = new Error(await errorMessage(res));
+    err.status = res.status;
+    throw err;
+  }
   return res.status === 204 ? null : res.json();
 }
 

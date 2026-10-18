@@ -181,13 +181,16 @@ def extract(book_id: int, pdf_path) -> None:
     sentences: list[tuple[int, str]] = []
     # (sayfa, kök) → [adet, cümle indeksi, cümle uzunluğu, yüzey biçimleri]
     page_words: dict[tuple[int, str], list] = {}
+    texts: list[tuple[int, str]] = []  # kitap içinde arama için (bkz. search.py)
 
     with pymupdf.open(pdf_path) as doc:
         total = doc.page_count
         last_report = 0.0
         for pno in range(total):
             page_no = pno + 1
-            for sentence in split_sentences(page_text(doc[pno])):
+            text = page_text(doc[pno])
+            texts.append((page_no, " ".join(text.split())))
+            for sentence in split_sentences(text):
                 if len(sentence) > _MAX_SENTENCE:
                     sentence = sentence[:_MAX_SENTENCE].rsplit(" ", 1)[0] + " …"
                 s_index = len(sentences)
@@ -228,7 +231,7 @@ def extract(book_id: int, pdf_path) -> None:
                 _set_status(book_id, "processing", progress * 0.9)
 
     proper = {lemma for lemma in capital_mid if lemma not in lower_seen}
-    _store(book_id, counts, first_page, proper, sentences, page_words)
+    _store(book_id, counts, first_page, proper, sentences, page_words, texts)
     _set_status(book_id, "ready", 1)
     log.info(
         "Kitap %s: %d kelime, %d aday, %.1f sn",
@@ -245,7 +248,7 @@ def _set_status(book_id: int, status: str, progress: float) -> None:
         )
 
 
-def _store(book_id, counts, first_page, proper, sentences, page_words) -> None:
+def _store(book_id, counts, first_page, proper, sentences, page_words, texts) -> None:
     lemmas = list(counts)
     with transaction() as tx:
         if tx.execute("SELECT 1 FROM books WHERE id = ?", (book_id,)).fetchone() is None:
@@ -253,6 +256,11 @@ def _store(book_id, counts, first_page, proper, sentences, page_words) -> None:
         tx.execute("DELETE FROM page_words WHERE book_id = ?", (book_id,))
         tx.execute("DELETE FROM sentences WHERE book_id = ?", (book_id,))
         tx.execute("DELETE FROM book_words WHERE book_id = ?", (book_id,))
+        tx.execute("DELETE FROM page_texts WHERE book_id = ?", (book_id,))
+        tx.executemany(
+            "INSERT INTO page_texts (book_id, page, text) VALUES (?, ?, ?)",
+            ((book_id, page, text) for page, text in texts if text),
+        )
 
         tx.executemany(
             "INSERT OR IGNORE INTO words (lemma, zipf) VALUES (?, ?)",

@@ -215,6 +215,17 @@ MIGRATIONS = [
     ALTER TABLE cards ADD COLUMN translation TEXT;
     ALTER TABLE cards ADD COLUMN note TEXT;
     """,
+    # 7: kitap içinde arama için sayfaların tam metni; kart başına tekrar sorguları için indeks
+    """
+    -- Boşlukları sadeleştirilmiş sayfa metni (bkz. search.py). Yoksa ilk aramada doldurulur.
+    CREATE TABLE page_texts (
+        book_id INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+        page    INTEGER NOT NULL,
+        text    TEXT NOT NULL,
+        PRIMARY KEY (book_id, page)
+    ) WITHOUT ROWID;
+    CREATE INDEX reviews_card ON reviews(card_id);
+    """,
 ]
 
 

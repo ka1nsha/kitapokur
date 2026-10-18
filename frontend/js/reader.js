@@ -122,6 +122,12 @@ function pageIndexAt(y) {
 }
 
 function currentPosition() {
+  // En alta inildiyse son sayfa okunuyordur; kısa ya da yatay sayfalarda
+  // okuma çizgisi son sayfaya hiç ulaşmayabilir.
+  const total = state.sizes.length;
+  if (total && viewer.scrollTop > 0 && viewer.scrollTop + viewer.clientHeight >= viewer.scrollHeight - 2) {
+    return { page: total, offset: 1 };
+  }
   const y = viewer.scrollTop + anchorY();
   const i = pageIndexAt(y);
   const offset = Math.min(1, Math.max(0, (y - state.tops[i]) / state.heights[i]));
@@ -141,7 +147,8 @@ function buildPages() {
     const el = document.createElement("div");
     el.className = "page";
     el.dataset.page = String(i + 1);
-    el.setAttribute("role", "img");
+    // "img" rolü metin katmanını ekran okuyuculardan gizlerdi.
+    el.setAttribute("role", "group");
     el.setAttribute("aria-label", `Sayfa ${i + 1}`);
     frag.append(el);
     return { el, canvas: null, textLayer: null, linkLayer: null, renderedScale: 0, task: null, busy: false };
@@ -196,21 +203,24 @@ function scheduleUpdate() {
 }
 
 function update() {
-  if (!state.pdf) return;
-  const top = viewer.scrollTop;
-  const first = pageIndexAt(top);
-  const last = pageIndexAt(top + viewer.clientHeight);
+  if (!state.tops.length) return;
+  // Sayfa numarası PDF yüklenmeden de güncellenir (iskelet hazır, butonlar çalışır).
+  if (state.pdf) {
+    const top = viewer.scrollTop;
+    const first = pageIndexAt(top);
+    const last = pageIndexAt(top + viewer.clientHeight);
 
-  // Önce ekrandakiler, sonra hemen öncesi/sonrası.
-  const order = [];
-  for (let i = first; i <= last; i++) order.push(i);
-  for (let d = 1; d <= RENDER_AHEAD; d++) order.push(last + d, first - d);
-  for (const i of order) if (i >= 0 && i < state.pages.length) renderPage(i);
+    // Önce ekrandakiler, sonra hemen öncesi/sonrası.
+    const order = [];
+    for (let i = first; i <= last; i++) order.push(i);
+    for (let d = 1; d <= RENDER_AHEAD; d++) order.push(last + d, first - d);
+    for (const i of order) if (i >= 0 && i < state.pages.length) renderPage(i);
 
-  // Uzaktaki sayfaların tuvallerini bırak.
-  state.pages.forEach((p, i) => {
-    if ((i < first - KEEP_AROUND || i > last + KEEP_AROUND) && (p.canvas || p.task)) releasePage(i);
-  });
+    // Uzaktaki sayfaların tuvallerini bırak.
+    state.pages.forEach((p, i) => {
+      if ((i < first - KEEP_AROUND || i > last + KEEP_AROUND) && (p.canvas || p.task)) releasePage(i);
+    });
+  }
 
   const pos = currentPosition();
   if (pos.page !== state.current) {
@@ -314,12 +324,14 @@ function releasePage(i) {
 // --- PDF içi bağlantılar ------------------------------------------------------
 
 async function addLinks(p, page, viewport) {
+  const textLayer = p.textLayer;
   let annotations;
   try {
     annotations = await page.getAnnotations({ intent: "display" });
   } catch { return; }
   const links = annotations.filter((a) => a.subtype === "Link" && (a.url || a.dest));
-  if (!links.length || !p.textLayer) return;
+  // Beklerken sayfa bırakılıp yeniden çizildiyse bu katman artık eskidir.
+  if (!links.length || p.textLayer !== textLayer || !textLayer || p.linkLayer) return;
 
   const layer = document.createElement("div");
   layer.className = "link-layer";
@@ -529,6 +541,9 @@ async function init() {
       isEvalSupported: false,
     }).promise;
   } catch (err) {
+    // Boş sayfa iskeleti gizlenir; mesaj kaydırılmış konumda ekran dışında kalmasın.
+    pagesEl.hidden = true;
+    viewer.scrollTop = 0;
     showMessage("PDF açılamadı", err?.message || "Dosya okunamadı.");
     return;
   }
@@ -626,14 +641,21 @@ themePop.addEventListener("click", (e) => {
   themeToggle.focus();
 });
 themePop.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") { e.stopPropagation(); setThemePop(false); themeToggle.focus(); }
+  if (e.key === "Escape") { e.stopPropagation(); setThemePop(false); themeToggle.focus(); return; }
+  // Ok tuşlarıyla seçenekler arasında gezinme.
+  const items = [...themePop.querySelectorAll("[data-reading]")];
+  const i = items.indexOf(document.activeElement);
+  if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); items[(i + 1) % items.length].focus(); }
+  else if (e.key === "ArrowUp" || e.key === "ArrowLeft") { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
 });
 document.addEventListener("pointerdown", (e) => {
   if (!themePop.hidden && !e.target.closest(".theme-menu")) setThemePop(false);
 });
 
 document.addEventListener("keydown", (e) => {
-  if (!state.ready || e.target.closest("input, textarea, select, [contenteditable], .panel, .toc, dialog")) return;
+  if (!state.ready || e.target.closest(
+    "input, textarea, select, [contenteditable], .panel, .toc, dialog, .theme-pop, .search-bar, .toasts, .sel-pop",
+  )) return;
   if (e.ctrlKey || e.metaKey || e.altKey) {
     if ((e.ctrlKey || e.metaKey) && (e.key === "+" || e.key === "=")) { e.preventDefault(); zoomStep(1); }
     else if ((e.ctrlKey || e.metaKey) && e.key === "-") { e.preventDefault(); zoomStep(-1); }

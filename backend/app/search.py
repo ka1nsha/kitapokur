@@ -1,8 +1,8 @@
 """Kitap içinde arama.
 
-Sonuç listesi, kelime çıkarırken saklanan cümlelerden gelir (SQLite'ta
-milisaniyeler sürer). Henüz cümleleri çıkarılmamış kitaplarda PDF'in metni
-sayfa sayfa taranır. Vurgu kutuları yalnızca ekrandaki sayfalar için PyMuPDF
+Sonuç listesi sayfaların tam metninden gelir (page_texts tablosu). Metin,
+kelime çıkarılırken kaydedilir; daha eski kitaplarda ilk aramada PDF'ten bir
+kez okunup saklanır. Vurgu kutuları yalnızca ekrandaki sayfalar için PyMuPDF
 ile hesaplanır.
 """
 
@@ -12,8 +12,8 @@ import unicodedata
 import pymupdf
 from fastapi import APIRouter, HTTPException, Query
 
-from . import processing
-from .db import get_conn
+from . import processing, words
+from .db import get_conn, transaction
 
 router = APIRouter(prefix="/api/books")
 
@@ -24,7 +24,7 @@ _APOSTROPHES = "'’‘"
 
 def _book(book_id: int):
     row = get_conn().execute(
-        "SELECT id, hash, status, page_count, words_status FROM books WHERE id = ?", (book_id,)
+        "SELECT id, hash, status, page_count, has_text FROM books WHERE id = ?", (book_id,)
     ).fetchone()
     if row is None:
         raise HTTPException(404, "Kitap bulunamadı.")
@@ -62,34 +62,18 @@ def _snippet(text: str, m: re.Match) -> dict:
     }
 
 
-def _from_sentences(book_id: int, q: str, pattern: re.Pattern) -> tuple[list[dict], int]:
-    # LIKE büyük/küçük harfe (ASCII) duyarsızdır; '_' kesme işaretinin her türüne uyar.
-    like = "%" + "".join(
-        "_" if ch in _APOSTROPHES else ("\\" + ch if ch in "%_\\" else ch) for ch in q
-    ) + "%"
-    rows = get_conn().execute(
-        "SELECT page, text FROM sentences WHERE book_id = ? AND text LIKE ? ESCAPE '\\' ORDER BY page, id",
-        (book_id, like),
-    )
-    items, total = [], 0
-    for row in rows:
-        for m in pattern.finditer(row["text"]):
-            total += 1
-            if len(items) < MAX_RESULTS:
-                items.append({"page": row["page"], **_snippet(row["text"], m)})
-    return items, total
-
-
-def _from_pdf(book_hash: str, pattern: re.Pattern) -> tuple[list[dict], int]:
-    items, total = [], 0
-    with pymupdf.open(processing.book_path(book_hash)) as doc:
-        for page in doc:
-            text = " ".join(unicodedata.normalize("NFKC", page.get_text("text")).split())
-            for m in pattern.finditer(text):
-                total += 1
-                if len(items) < MAX_RESULTS:
-                    items.append({"page": page.number + 1, **_snippet(text, m)})
-    return items, total
+def _ensure_texts(book) -> None:
+    """Sayfa metinleri henüz yoksa (eski kitaplar) PDF'ten bir kez okuyup sakla."""
+    conn = get_conn()
+    if conn.execute("SELECT 1 FROM page_texts WHERE book_id = ? LIMIT 1", (book["id"],)).fetchone():
+        return
+    with pymupdf.open(processing.book_path(book["hash"])) as doc:
+        texts = [(p.number + 1, " ".join(words.page_text(p).split())) for p in doc]
+    with transaction() as tx:
+        tx.executemany(
+            "INSERT OR REPLACE INTO page_texts (book_id, page, text) VALUES (?, ?, ?)",
+            ((book["id"], page, text) for page, text in texts if text),
+        )
 
 
 @router.get("/{book_id}/search")
@@ -98,11 +82,26 @@ def search(book_id: int, q: str = Query(..., min_length=1, max_length=100)) -> d
     q = _normalize(q)
     if len(q) < 2:
         raise HTTPException(422, "En az iki harf yaz.")
+    if not book["has_text"]:
+        return {"q": q, "total": 0, "items": [], "truncated": False}  # taranmış kitap
+    _ensure_texts(book)
+
     pattern = _matcher(q)
-    if book["words_status"] == "ready":
-        items, total = _from_sentences(book_id, q, pattern)
-    else:
-        items, total = _from_pdf(book["hash"], pattern)
+    # LIKE büyük/küçük harfe (ASCII) duyarsızdır ve sayfaları hızla eler;
+    # '_' kesme işaretinin her türüne uyar. Kesin eşleşme düzenli ifadeyle bulunur.
+    like = "%" + "".join(
+        "_" if ch in _APOSTROPHES else ("\\" + ch if ch in "%_\\" else ch) for ch in q
+    ) + "%"
+    rows = get_conn().execute(
+        "SELECT page, text FROM page_texts WHERE book_id = ? AND text LIKE ? ESCAPE '\\' ORDER BY page",
+        (book_id, like),
+    )
+    items, total = [], 0
+    for row in rows:
+        for m in pattern.finditer(row["text"]):
+            total += 1
+            if len(items) < MAX_RESULTS:
+                items.append({"page": row["page"], **_snippet(row["text"], m)})
     return {"q": q, "total": total, "items": items, "truncated": total > len(items)}
 
 

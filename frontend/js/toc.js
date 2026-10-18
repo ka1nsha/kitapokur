@@ -87,7 +87,7 @@ export function createToc({ bookId, goTo }) {
   }
 
   toggle.addEventListener("click", () => (isOpen() ? close() : open()));
-  document.getElementById("toc-close").addEventListener("click", close);
+  document.getElementById("toc-close").addEventListener("click", () => { close(); toggle.focus(); });
   root.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { close(); toggle.focus(); }
   });

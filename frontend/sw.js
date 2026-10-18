@@ -6,7 +6,7 @@
 // - Sürümü sabit dosyalar (PDF.js, yazı tipleri, simgeler, kapaklar): önce önbellek.
 // - API istekleri hiç önbelleğe alınmaz; veriler her zaman sunucudan gelir.
 
-const VERSION = "okur-v2";
+const VERSION = "okur-v3";
 const SHELL = [
   "/", "/index.html", "/reader.html", "/study.html", "/cards.html", "/stats.html", "/profiles.html",
   "/css/app.css", "/css/library.css", "/css/reader.css", "/css/study.css", "/css/cards.css", "/css/stats.css",
@@ -41,7 +41,10 @@ async function networkFirst(request) {
   const cache = await caches.open(VERSION);
   try {
     const response = await fetch(request);
-    if (response.ok) cache.put(request, response.clone());
+    // Sayfalar parametresiz adresleriyle saklanır ("reader.html?book=3",
+    // "?book=4"… önbellekte ayrı ayrı birikmesin).
+    const key = request.mode === "navigate" ? new URL(request.url).pathname : request;
+    if (response.ok) cache.put(key, response.clone());
     return response;
   } catch (err) {
     // "?book=3" gibi parametreler sayfanın kendisini değiştirmez.

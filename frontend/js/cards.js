@@ -75,7 +75,10 @@ function row(card) {
     ? [h("span", { lang: "en" }, card.book.title), card.page ? ` · s. ${card.page}` : null]
     : "Elle eklendi";
   return h("li", {},
-    h("button", { type: "button", class: `card-row${card.suspended ? " is-suspended" : ""}`, onclick: () => openEdit(card) },
+    h("button", {
+      type: "button", class: `card-row${card.suspended ? " is-suspended" : ""}`, "data-id": String(card.id),
+      onclick: () => openEdit(card),
+    },
       h("div", { class: "main" },
         h("div", { class: "line1" },
           h("span", { class: "lemma", lang: "en" }, card.lemma),
@@ -166,7 +169,14 @@ function openEdit(card) {
   setTool("reset", "Baştan öğren");
   setTool("delete", "Sil");
   editDialog.querySelector('[data-action="reset"]').hidden = card.state === 0 && !card.reviews;
+  // Escape returnValue'yu değiştirmez; önceki "save" kalırsa vazgeçilen düzenleme kaydedilirdi.
+  editDialog.returnValue = "";
   editDialog.showModal();
+}
+
+// Liste yeniden çizilince klavye odağı aynı karta (yoksa arama kutusuna) döner.
+function refocus(cardId) {
+  (list.querySelector(`[data-id="${cardId}"]`) || searchInput).focus({ preventScroll: true });
 }
 
 function replaceCard(updated) {
@@ -185,6 +195,7 @@ editDialog.addEventListener("close", async () => {
       note: form.elements.note.value,
     }));
     render();
+    refocus(card.id);
     toast("Kart kaydedildi");
   } catch (err) {
     toast(err.message, { error: true });
@@ -213,7 +224,8 @@ editDialog.querySelector(".card-tools").addEventListener("click", async (e) => {
       toast(`"${card.lemma}" silindi`);
     }
     editDialog.close("cancel");
-    load();
+    await load();
+    refocus(card.id);
   } catch (err) {
     toast(err.message, { error: true });
   }

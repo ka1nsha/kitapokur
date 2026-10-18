@@ -138,6 +138,10 @@ function closeMenu() {
   openMenu.menu.remove();
   openMenu.button.setAttribute("aria-expanded", "false");
   openMenu = null;
+  if (renderPending) {
+    renderPending = false;
+    queueMicrotask(() => render({ poll: true }));
+  }
 }
 
 document.addEventListener("click", (e) => {
@@ -226,10 +230,14 @@ async function renderToday() {
   );
 }
 
-function render() {
+// poll: durum yoklamasından gelen yenileme; "Bugün" kutusu (ayrı istek) yenilenmez
+// ve klavye odağı aynı kitaba geri verilir.
+function render({ poll = false } = {}) {
+  const focused = poll && grid.contains(document.activeElement) ? document.activeElement.getAttribute("href") : null;
   closeMenu();
   renderContinue();
-  renderToday();
+  if (!poll) renderToday();
+  if (focused) queueMicrotask(() => grid.querySelector(`[href="${CSS.escape(focused)}"]`)?.focus());
   grid.removeAttribute("aria-busy");
   if (books.length === 0) {
     grid.replaceChildren(h("div", { class: "empty" },
@@ -256,26 +264,41 @@ function renderSkeleton() {
 
 // --- Veri -------------------------------------------------------------------
 
-async function load() {
+let pollFailures = 0;
+let renderPending = false;
+
+async function load({ poll = false } = {}) {
   try {
     books = await api.listBooks();
-    render();
+    pollFailures = 0;
+    // Açık "⋯" menüsü yoklama yüzünden kapanmasın; menü kapanınca çizilir.
+    if (poll && openMenu) renderPending = true;
+    else render({ poll });
   } catch (err) {
-    toast(`Kitaplar yüklenemedi: ${err.message}`, { error: true });
+    // Sunucuya ulaşılamıyorsa her denemede yeni bildirim çıkmasın.
+    if (pollFailures === 0) toast(`Kitaplar yüklenemedi: ${err.message}`, { error: true });
+    pollFailures += 1;
   }
   schedulePoll();
 }
 
-// İşlenmekte olan kitap varsa durumu kısa aralıklarla yokla.
+// İşlenmekte olan kitap varsa durumu kısa aralıklarla yokla. Hata olursa
+// aralık 30 saniyeye kadar uzar; sekme arka plandayken yoklanmaz.
 function schedulePoll() {
   clearTimeout(pollTimer);
   const busy = (b) => b.status === "processing"
     || (b.status === "ready" && (b.words_status === "pending" || b.words_status === "processing"))
     || (b.translating && b.translated < 1);
-  if (books.some(busy)) {
-    pollTimer = setTimeout(load, POLL_MS);
+  if (!document.hidden && books.some(busy)) {
+    const delay = Math.min(POLL_MS * 2 ** pollFailures, 30000);
+    pollTimer = setTimeout(() => load({ poll: true }), delay);
   }
 }
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) load({ poll: true });
+  else clearTimeout(pollTimer);
+});
 
 async function uploadFiles(fileList) {
   const files = [...fileList].filter((f) => f.type === "application/pdf" || /\.pdf$/i.test(f.name));

@@ -1,5 +1,6 @@
 """Flashcard çalışma API'si."""
 
+import logging
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query
@@ -10,6 +11,7 @@ from .db import get_conn
 from .users import CurrentUser, set_setting
 
 router = APIRouter(prefix="/api/study")
+log = logging.getLogger("kitapokur.study")
 
 
 @router.get("/summary")
@@ -26,7 +28,8 @@ def next_card(user: CurrentUser, book: int | None = Query(None)) -> dict:
             details = enrich.word_details(data["card"]["word_id"])
             data["card"]["details"] = {k: details.get(k) for k in ("phonetic", "audio", "meanings", "forms", "examples")}
             data["card"]["translation"] = data["card"]["translation"] or details.get("translation")
-        except KeyError:
+        except Exception:  # noqa: BLE001 - sözlük/çeviri hatası çalışmayı durdurmasın
+            log.warning("Kart %s için ayrıntı alınamadı", data["card"]["id"], exc_info=True)
             data["card"]["details"] = None
         card = data["card"]
         meanings = (card["details"] or {}).get("meanings") or []

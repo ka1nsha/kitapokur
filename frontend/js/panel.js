@@ -183,6 +183,13 @@ export function createPanel({ bookId, goToPage }) {
 
   toggleBtn.addEventListener("click", () => setOpen(!isOpen()));
   $("panel-close").addEventListener("click", () => { setOpen(false); toggleBtn.focus(); });
+  // Telefonda alttan açılan panel Escape ile de kapanır.
+  panel.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && NARROW.matches && !e.target.closest("select")) {
+      setOpen(false);
+      toggleBtn.focus();
+    }
+  });
   // Telefonda panel kapalı başlar; geniş ekranda son tercih hatırlanır.
   setOpen(!NARROW.matches && readPanelPref(), { remember: false });
 
@@ -198,7 +205,8 @@ export function createPanel({ bookId, goToPage }) {
     }
     if (focus) tabs[name].focus();
     if (name === "page") renderPageList();
-    else if (!state.lists[name].loaded) loadList(name, true);
+    // Kelimeler hazırlanırken liste boş gelir; hazır olunca start() yükler.
+    else if (state.ready && !state.lists[name].loaded) loadList(name, true);
   }
 
   const tabOrder = ["page", "book", "deck"];
@@ -659,6 +667,9 @@ export function createPanel({ bookId, goToPage }) {
       const settings = await api.getSettings();
       levelSelect.value = settings.level;
     } catch { /* varsayılan seviye */ }
+    // Hazırlık sırasında alınmış boş sayfa ve liste verileri atılır.
+    state.pageCache.clear();
+    state.lists.book.loaded = state.lists.deck.loaded = false;
     state.ready = true;
     selectTab(state.tab);
     refreshTotals();

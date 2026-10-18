@@ -46,7 +46,11 @@ def _clean(text: str) -> str:
 
 
 def lookup(word: str) -> dict:
-    """{"phonetic", "audio", "meanings": [{"pos", "defs": [{"en", "example"}]}], "source"}"""
+    """{"phonetic", "audio", "meanings": [{"pos", "defs": [{"en", "example"}]}], "source", "missing"}
+
+    missing=True: sözlük kesin olarak "yok" dedi (404); sonuç saklanabilir.
+    source=None ve missing=False: sözlüğe ulaşılamadı; daha sonra tekrar denenir.
+    """
     if _available("freedictionary"):
         try:
             result = _free_dictionary(word)
@@ -55,13 +59,16 @@ def lookup(word: str) -> dict:
         except net.NetError as exc:
             if exc.status != 404:
                 _mark_down("freedictionary")
+    missing = False
     if _available("wiktionary"):
         try:
             return _wiktionary(word)
         except net.NetError as exc:
-            if exc.status != 404:
+            if exc.status == 404:
+                missing = True
+            else:
                 _mark_down("wiktionary")
-    return {"phonetic": None, "audio": None, "meanings": [], "source": None}
+    return {"phonetic": None, "audio": None, "meanings": [], "source": None, "missing": missing}
 
 
 def _free_dictionary(word: str) -> dict | None:

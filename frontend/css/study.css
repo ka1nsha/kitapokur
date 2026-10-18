@@ -115,6 +115,7 @@
 /* --- Çoktan seçmeli ----------------------------------------------------------- */
 
 .choices { padding: 0 8% 28px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.choices:focus { outline: none; }
 .choice {
   font: inherit; font-size: 17px; font-weight: 500; text-align: left; min-height: 60px; padding: 10px 14px;
   border: 1px solid var(--line-strong); border-radius: 12px; background: var(--surface); color: var(--ink);
@@ -162,11 +163,14 @@ kbd {
 @media (max-width: 600px) {
   .study { padding: 16px 12px 40px; gap: 14px; }
   .study-bar { padding: 6px 8px; }
-  .study-bar > .btn, .study-bar .bar-actions a[href="/"] { display: none; }
+  /* Bu bağlantılar ana menüde de var; telefonda başlık kısa kalsın. */
+  .study-bar > .btn, .study-bar .bar-actions :is(a[href="/"], a[href="/stats.html"], a[href="/cards.html"]) { display: none; }
+  .study-bar .bar-actions:not(:has(> :not(a[href="/"], a[href="/stats.html"], a[href="/cards.html"]))) { display: none; }
   .study-bar-left { gap: 6px 10px; }
   .study-bar h1 { font-size: 17px; }
   .select-label { font-size: 13px; gap: 6px; }
-  .select-label select { height: 40px; max-width: 150px; }
+  .select-label select { height: 40px; max-width: 130px; }
+  .select-label #new-per-day { max-width: 64px; }
   .front { padding: 28px 18px 24px; }
   .big { font-size: 36px; }
   .big.tr { font-size: 28px; }
