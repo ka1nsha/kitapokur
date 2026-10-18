@@ -14,6 +14,10 @@
 <link rel="modulepreload" href="/vendor/pdfjs/pdf.min.mjs">
 <link rel="stylesheet" href="/css/app.css">
 <link rel="stylesheet" href="/css/reader.css">
+<script>
+  // Okuma görünümü sayfa çizilmeden uygulanır (gece modunda beyaz parlama olmasın).
+  try { document.documentElement.dataset.reading = localStorage.getItem("okur.reading") || "light"; } catch { /* özel pencere */ }
+</script>
 <script type="module" src="/js/reader.js"></script>
 </head>
 <body>
@@ -54,6 +58,21 @@
 
     <div class="bar-end">
       <div class="save-state" id="save-state" role="status" aria-live="polite"></div>
+      <button type="button" class="icon-btn plain" id="search-toggle" aria-label="Kitapta ara" title="Kitapta ara (Ctrl+F)"
+              aria-controls="search-bar" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      </button>
+      <div class="theme-menu">
+        <button type="button" class="icon-btn plain" id="theme-toggle" aria-label="Okuma görünümü" title="Okuma görünümü"
+                aria-haspopup="true" aria-expanded="false" aria-controls="theme-pop">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>
+        </button>
+        <div class="theme-pop" id="theme-pop" role="radiogroup" aria-label="Okuma görünümü" hidden>
+          <button type="button" role="radio" data-reading="light" aria-checked="true"><span class="swatch light" aria-hidden="true"></span>Açık</button>
+          <button type="button" role="radio" data-reading="sepia" aria-checked="false"><span class="swatch sepia" aria-hidden="true"></span>Sepya</button>
+          <button type="button" role="radio" data-reading="night" aria-checked="false"><span class="swatch night" aria-hidden="true"></span>Gece</button>
+        </div>
+      </div>
       <button type="button" class="btn btn-ghost panel-toggle" id="toc-toggle" aria-controls="toc" aria-expanded="false" hidden>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11"/><path d="M9 12h11"/><path d="M9 18h11"/><path d="M4 6h.01"/><path d="M4 12h.01"/><path d="M4 18h.01"/></svg>
         <span class="label-text">İçindekiler</span>
@@ -64,6 +83,27 @@
         <span class="badge" id="panel-badge" hidden></span>
       </button>
     </div>
+  </div>
+  <div class="search-bar" id="search-bar" hidden>
+    <form class="search-form" id="search-form" role="search">
+      <input type="search" id="search-input" placeholder="Kitapta ara" aria-label="Kitapta ara"
+             autocomplete="off" autocapitalize="none" spellcheck="false" lang="en" enterkeyhint="search">
+      <span class="search-count" id="search-count" role="status" aria-live="polite"></span>
+      <button type="button" class="icon-btn plain" id="search-prev" aria-label="Önceki sonuç" title="Önceki (Shift+Enter)" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
+      </button>
+      <button type="button" class="icon-btn plain" id="search-next" aria-label="Sonraki sonuç" title="Sonraki (Enter)" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <button type="button" class="icon-btn plain" id="search-list" aria-label="Sonuç listesi" title="Sonuç listesi"
+              aria-controls="search-results" aria-expanded="false" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12"/><path d="M8 12h12"/><path d="M8 18h12"/><path d="M4 6h.01"/><path d="M4 12h.01"/><path d="M4 18h.01"/></svg>
+      </button>
+      <button type="button" class="icon-btn plain" id="search-close" aria-label="Aramayı kapat" title="Kapat (Esc)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>
+      </button>
+    </form>
+    <ol class="search-results" id="search-results" hidden></ol>
   </div>
   <div class="read-progress" aria-hidden="true"><div id="read-progress"></div></div>
 </header>

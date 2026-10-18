@@ -16,7 +16,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from . import cards_api, enrich, processing, study_api, tatoeba, toc, users, words_api
+from . import cards_api, enrich, processing, search, stats, study_api, tatoeba, toc, users, words_api
 from .config import FRONTEND_DIR, MAX_UPLOAD_MB, UPLOAD_TMP_DIR, ensure_dirs
 from .db import get_conn, migrate, transaction
 
@@ -50,6 +50,8 @@ app.include_router(users.router)
 app.include_router(words_api.router)
 app.include_router(study_api.router)
 app.include_router(cards_api.router)
+app.include_router(search.router)
+app.include_router(stats.router)
 
 
 # --- Yardımcılar -------------------------------------------------------------

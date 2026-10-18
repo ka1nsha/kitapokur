@@ -6,12 +6,13 @@
 // - Sürümü sabit dosyalar (PDF.js, yazı tipleri, simgeler, kapaklar): önce önbellek.
 // - API istekleri hiç önbelleğe alınmaz; veriler her zaman sunucudan gelir.
 
-const VERSION = "okur-v1";
+const VERSION = "okur-v2";
 const SHELL = [
-  "/", "/index.html", "/reader.html", "/study.html", "/cards.html", "/profiles.html",
-  "/css/app.css", "/css/library.css", "/css/reader.css", "/css/study.css", "/css/cards.css", "/css/profiles.css",
-  "/js/api.js", "/js/library.js", "/js/reader.js", "/js/panel.js", "/js/toc.js", "/js/study.js",
-  "/js/cards.js", "/js/profiles.js",
+  "/", "/index.html", "/reader.html", "/study.html", "/cards.html", "/stats.html", "/profiles.html",
+  "/css/app.css", "/css/library.css", "/css/reader.css", "/css/study.css", "/css/cards.css", "/css/stats.css",
+  "/css/profiles.css",
+  "/js/api.js", "/js/library.js", "/js/reader.js", "/js/panel.js", "/js/toc.js", "/js/search.js",
+  "/js/selection.js", "/js/study.js", "/js/cards.js", "/js/stats.js", "/js/profiles.js",
   "/favicon.svg", "/manifest.webmanifest", "/icons/icon-192.png",
 ];
 

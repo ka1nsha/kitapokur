@@ -56,6 +56,10 @@ body { display: flex; flex-direction: column; overflow: hidden; background: var(
 
 @media (max-width: 720px) {
   .reader-bar-inner { padding: 6px 8px; gap: 4px 8px; }
+  /* Kitap adı düğmelerle aynı satırda kalır, sığmazsa kısaltılır. */
+  .book-id { flex: 1 1 0; }
+  .bar-end { gap: 2px; }
+  .back { padding: 0 6px; }
   .back span { display: none; }
   .controls { flex: 1 1 100%; justify-content: center; order: 3; }
   .page-form label { display: none; }
@@ -296,3 +300,124 @@ body { display: flex; flex-direction: column; overflow: hidden; background: var(
 @media (max-width: 480px) {
   .panel-toggle .label-text { display: none; }
 }
+
+/* --- Okuma görünümü menüsü ---------------------------------------------- */
+
+.theme-menu { position: relative; }
+.theme-pop {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; min-width: 170px; padding: 6px;
+  display: flex; flex-direction: column; gap: 2px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 32px rgba(26, 29, 31, .18);
+}
+.theme-pop[hidden] { display: none; }
+.theme-pop button {
+  font: inherit; font-size: 15px; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px;
+  border: 0; border-radius: 8px; background: transparent; color: var(--ink); text-align: left; cursor: pointer;
+}
+.theme-pop button:hover { background: var(--bg); }
+.theme-pop button[aria-checked="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.swatch { width: 22px; height: 22px; border-radius: 6px; border: 1px solid var(--line-strong); flex: none; }
+.swatch.light { background: #FFFFFF; }
+.swatch.sepia { background: #F4ECD8; }
+.swatch.night { background: #1B1B1B; }
+
+/* --- Kitap içinde arama --------------------------------------------------- */
+
+.search-bar { position: relative; border-top: 1px solid var(--line); padding: 6px 16px; }
+.search-bar[hidden] { display: none; }
+.search-form { display: flex; align-items: center; gap: 2px; max-width: 760px; margin: 0 auto; }
+.search-form input {
+  flex: 1; min-width: 0; height: 40px; padding: 0 12px; margin-right: 6px; font: inherit; font-size: 15px;
+  border: 1px solid var(--line-strong); border-radius: 8px; background: var(--bg); color: var(--ink);
+}
+.search-count {
+  flex: none; padding: 0 6px; font-size: 13px; color: var(--ink-3); white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.search-results {
+  position: absolute; z-index: 6; top: 100%; left: 50%; transform: translateX(-50%);
+  width: min(760px, calc(100% - 16px)); max-height: min(50vh, 440px); overflow-y: auto; overscroll-behavior: contain;
+  margin: 0; padding: 6px; list-style: none; background: var(--surface);
+  border: 1px solid var(--line); border-top: 0; border-radius: 0 0 12px 12px; box-shadow: 0 16px 32px rgba(26, 29, 31, .16);
+}
+.search-results[hidden] { display: none; }
+.search-results button {
+  font: inherit; font-size: 14px; line-height: 1.45; width: 100%; display: flex; align-items: baseline; gap: 12px;
+  padding: 8px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--ink-2); text-align: left; cursor: pointer;
+}
+.search-results button:hover { background: var(--bg); }
+.search-results button[aria-current="true"] { background: var(--accent-soft); color: var(--ink); }
+.result-page { flex: none; min-width: 48px; font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.result-text { min-width: 0; overflow-wrap: anywhere; }
+.result-text mark { background: rgba(255, 170, 0, .42); color: inherit; border-radius: 2px; padding: 0 1px; }
+.result-more { padding: 8px 10px; font-size: 13px; color: var(--ink-3); }
+
+/* Sayfadaki arama eşleşmeleri; tıklamalar alttaki kelime vurgularına geçer. */
+.search-layer { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.search-layer .hit { position: absolute; border-radius: 2px; background: rgba(255, 150, 0, .30); }
+.search-layer .hit.current { background: rgba(255, 130, 0, .50); box-shadow: 0 0 0 2px #D96A00; }
+
+@media (max-width: 720px) {
+  .search-bar { padding: 6px 8px; }
+  .search-form input { margin-right: 2px; }
+  .search-results { width: 100%; border-radius: 0 0 12px 12px; }
+}
+
+/* --- Seçili metni çevirme ------------------------------------------------- */
+
+.sel-translate {
+  position: fixed; z-index: 40; display: flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px;
+  border: 0; border-radius: 99px; background: var(--dark); color: #fff; font: inherit; font-size: 14px; font-weight: 600;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .25); cursor: pointer; touch-action: manipulation;
+}
+.sel-translate:hover { background: var(--dark-2); }
+.sel-translate[hidden], .sel-pop[hidden] { display: none; }
+.sel-pop {
+  position: fixed; z-index: 41; width: min(420px, calc(100vw - 16px)); max-height: 60vh; overflow-y: auto;
+  padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 8px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 16px 40px rgba(26, 29, 31, .25);
+}
+.sel-head { display: flex; align-items: center; justify-content: space-between; margin-right: -10px; }
+.sel-head .label { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.sel-en { margin: 0; font-family: var(--serif); font-style: italic; font-size: 15px; line-height: 1.5; color: var(--ink-3); }
+.sel-tr { margin: 0; font-size: 17px; line-height: 1.5; color: var(--ink); }
+.sel-tr.error { font-size: 15px; color: var(--danger); }
+.sel-note { margin: 0; font-size: 12px; color: var(--ink-3); }
+@media (max-width: 720px) {
+  /* Telefonda çeviri alttan açılan bir çekmece olur. */
+  .sel-pop {
+    left: 0; right: 0; bottom: 0; width: auto; max-height: 50vh; border-radius: 16px 16px 0 0;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+}
+
+/* --- Sepya ve gece görünümü ------------------------------------------------
+   PDF sayfası bir resim (tuval) olduğu için renkleri filtreyle değiştirilir:
+   sepyada beyaz kâğıt rengine karışır, gecede ters çevrilip renk tonu korunur. */
+
+:root[data-reading="sepia"] {
+  --bg: #F3EAD6; --bg-sunk: #E8DDC4; --surface: #FBF6EA; --line: #E2D5B9; --line-strong: #D2C3A3;
+  --ink: #2B251C; --ink-2: #4A4133; --ink-3: #6B604E;
+}
+:root[data-reading="sepia"] .page { background: #F4ECD8; }
+:root[data-reading="sepia"] .page canvas { mix-blend-mode: multiply; }
+
+:root[data-reading="night"] {
+  color-scheme: dark;
+  --bg: #202427; --bg-sunk: #121416; --surface: #1A1D20; --line: #2C3236; --line-strong: #3B4247;
+  --ink: #E6E3DC; --ink-2: #C9C5BD; --ink-3: #9EA4A9;
+  --accent: #5CC2A8; --accent-hover: #7BD3BD; --accent-soft: #183B34;
+  --amber: #E3A462; --amber-soft: #3B2B19; --danger: #F08A80; --danger-soft: #3D211E;
+  --shadow-page: 0 1px 2px rgba(0, 0, 0, .5), 0 12px 32px rgba(0, 0, 0, .45);
+}
+:root[data-reading="night"] body { background: var(--bg-sunk); }
+:root[data-reading="night"] .page { background: #1B1B1B; }
+:root[data-reading="night"] .page canvas { filter: invert(.9) hue-rotate(180deg); }
+:root[data-reading="night"] .btn-primary,
+:root[data-reading="night"] .btn-primary:hover { color: #0D1714; }
+:root[data-reading="night"] .word-card .label { color: var(--ink-3); }
+:root[data-reading="night"] :is(.word-card .quote, .def, .ex-en) { color: var(--ink); }
+:root[data-reading="night"] .quote-tr { color: var(--accent); }
+:root[data-reading="night"] .hl-layer .w { background: rgba(255, 196, 0, .20); box-shadow: inset 0 -2px 0 rgba(255, 196, 0, .75); }
+:root[data-reading="night"] .hl-layer .w.learning { background: rgba(92, 194, 168, .16); box-shadow: inset 0 -2px 0 rgba(92, 194, 168, .8); }
+:root[data-reading="night"] .hl-layer .w.selected { background: rgba(92, 194, 168, .32); box-shadow: inset 0 -3px 0 var(--accent); }
+:root[data-reading="night"] .textLayer ::selection { background: rgba(92, 194, 168, .35); }

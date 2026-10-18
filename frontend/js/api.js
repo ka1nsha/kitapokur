@@ -30,7 +30,10 @@ async function errorMessage(res) {
 export const api = {
   listBooks: () => request("GET", "/api/books"),
   getBook: (id) => request("GET", `/api/books/${id}`),
-  bookToc: (id) => request("GET", `/api/books/${id}/toc`),  updateBook: (id, fields) => request("PATCH", `/api/books/${id}`, fields),
+  bookToc: (id) => request("GET", `/api/books/${id}/toc`),
+  searchBook: (id, q) => request("GET", `/api/books/${id}/search?${new URLSearchParams({ q })}`),
+  searchPage: (id, page, q) => request("GET", `/api/books/${id}/pages/${page}/search?${new URLSearchParams({ q })}`),
+  stats: () => request("GET", "/api/stats"),  updateBook: (id, fields) => request("PATCH", `/api/books/${id}`, fields),
   deleteBook: (id) => request("DELETE", `/api/books/${id}`),
   saveProgress: (id, page, offset) =>
     request("POST", `/api/books/${id}/progress`, { page, offset }),

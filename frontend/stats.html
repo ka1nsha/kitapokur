@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FFFFFF">
+<title>Okur · İstatistik</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Okur">
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="/css/study.css">
+<link rel="stylesheet" href="/css/stats.css">
+<script type="module" src="/js/stats.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="study-bar">
+    <div class="study-bar-left">
+      <a class="back" href="/">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>Kütüphane</span>
+      </a>
+      <h1>İstatistik</h1>
+    </div>
+    <div class="bar-actions">
+      <a class="btn btn-ghost" href="/cards.html">Kartlar</a>
+      <a class="btn btn-primary" href="/study.html">Çalış</a>
+    </div>
+  </div>
+</header>
+
+<main class="stats-page" id="stats" aria-busy="true">
+  <section class="tiles" id="tiles" aria-label="Özet"></section>
+
+  <section class="panel-box">
+    <div class="box-head">
+      <h2>Son 30 gün</h2>
+      <p class="box-sub" id="history-sub"></p>
+    </div>
+    <div class="chart" id="history" role="img"></div>
+    <div class="legend">
+      <span><i class="dot ok"></i>Doğru</span>
+      <span><i class="dot bad"></i>Tekrar (unutulan)</span>
+    </div>
+  </section>
+
+  <section class="panel-box">
+    <div class="box-head">
+      <h2>Önümüzdeki 14 gün</h2>
+      <p class="box-sub" id="forecast-sub"></p>
+    </div>
+    <div class="chart forecast" id="forecast" role="img"></div>
+  </section>
+
+  <div class="two-col">
+    <section class="panel-box">
+      <div class="box-head"><h2>Kartlar</h2></div>
+      <div class="stack" id="states" role="img"></div>
+      <ul class="legend-list" id="states-legend"></ul>
+    </section>
+    <section class="panel-box">
+      <div class="box-head"><h2>Kelimeler</h2></div>
+      <ul class="legend-list word-counts" id="words"></ul>
+    </section>
+  </div>
+
+  <section class="panel-box">
+    <div class="box-head"><h2>Kitaplar</h2></div>
+    <ul class="book-progress" id="books"></ul>
+  </section>
+</main>
+</body>
+</html>

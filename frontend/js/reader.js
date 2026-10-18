@@ -1,6 +1,8 @@
 import * as pdfjsLib from "/vendor/pdfjs/pdf.min.mjs";
 import { api, toast } from "./api.js";
 import { createPanel } from "./panel.js";
+import { createSearch } from "./search.js";
+import { createSelectionTranslate } from "./selection.js";
 import { createToc } from "./toc.js";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/vendor/pdfjs/pdf.worker.min.mjs";
@@ -29,6 +31,13 @@ const saveState = $("save-state");
 const bookId = Number(new URLSearchParams(location.search).get("book"));
 const panel = createPanel({ bookId, goToPage: (n) => goToPage(n) });
 const toc = createToc({ bookId, goTo: (page, offset) => goToPosition(page, offset) });
+const search = createSearch({
+  bookId,
+  goTo: (page, offset, opts) => goToPosition(page, offset, opts),
+  currentPosition: () => currentPosition(),
+  renderedPages: () => state.pages.flatMap((p, i) => (p.textLayer ? [{ page: i + 1, el: p.el }] : [])),
+});
+createSelectionTranslate({ viewer });
 // PDF içi bağlantıların hedefi (isim ya da açık hedef dizisi).
 const linkDest = new WeakMap();
 
@@ -270,6 +279,7 @@ async function renderPage(i) {
       });
       await textLayer.render();
       panel.decorate(i + 1, p.el);
+      search.decorate(i + 1, p.el);
       addLinks(p, page, viewport);
     }
   } catch (err) {
@@ -293,6 +303,7 @@ function releasePage(i) {
   }
   p.textLayer?.remove();
   p.linkLayer?.remove();
+  p.el.querySelector(".search-layer")?.remove();
   panel.forget(i + 1);
   p.textLayer = null;
   p.linkLayer = null;
@@ -570,6 +581,55 @@ pageInput.addEventListener("focus", () => {
 pageInput.addEventListener("blur", () => {
   pageInput.readOnly = true;
   pageInput.value = String(state.current);
+});
+
+// PDF.js sayfaları ekrana geldikçe çizildiği için tarayıcının kendi araması
+// kitabın tamamını göremez; Ctrl+F uygulamanın aramasını açar.
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === "f" && state.ready) {
+    e.preventDefault();
+    search.open();
+  } else if (e.key === "Escape" && search.isOpen() && !e.target.closest("input, .panel, .toc, dialog")) {
+    search.close();
+  }
+});
+
+// --- Okuma görünümü (açık / sepya / gece) -------------------------------------
+
+const READING_THEMES = ["light", "sepia", "night"];
+const themeToggle = $("theme-toggle");
+const themePop = $("theme-pop");
+
+function applyReadingTheme(theme) {
+  if (!READING_THEMES.includes(theme)) theme = "light";
+  document.documentElement.dataset.reading = theme;
+  try { localStorage.setItem("okur.reading", theme); } catch { /* özel pencere */ }
+  themePop.querySelectorAll("[data-reading]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.reading === theme)));
+  // Tarayıcı çubuğunun rengi de görünüme uysun (telefonda).
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content",
+    { light: "#FFFFFF", sepia: "#F3EAD6", night: "#16191B" }[theme]);
+}
+
+function setThemePop(open) {
+  themePop.hidden = !open;
+  themeToggle.setAttribute("aria-expanded", String(open));
+  if (open) themePop.querySelector('[aria-checked="true"]')?.focus();
+}
+
+applyReadingTheme(document.documentElement.dataset.reading);
+themeToggle.addEventListener("click", () => setThemePop(themePop.hidden));
+themePop.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-reading]");
+  if (!btn) return;
+  applyReadingTheme(btn.dataset.reading);
+  setThemePop(false);
+  themeToggle.focus();
+});
+themePop.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") { e.stopPropagation(); setThemePop(false); themeToggle.focus(); }
+});
+document.addEventListener("pointerdown", (e) => {
+  if (!themePop.hidden && !e.target.closest(".theme-menu")) setThemePop(false);
 });
 
 document.addEventListener("keydown", (e) => {

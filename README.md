@@ -21,6 +21,28 @@ PDF içindeki bağlantılar (basılı içindekiler sayfası, dipnotlar) tıklana
 Bağlantıyla gittikten sonra çıkan **Geri dön** düğmesi okuduğun yere döndürür.
 Web adresleri yeni sekmede açılır.
 
+## Okuyucuda arama, çeviri ve görünüm
+
+- **Kitapta ara** (büyüteç ya da <kbd>Ctrl</kbd>+<kbd>F</kbd>): sonuçlar sayfa
+  numarası ve çevresindeki metinle listelenir, eşleşmeler sayfada turuncu
+  işaretlenir. <kbd>Enter</kbd> sonraki, <kbd>Shift</kbd>+<kbd>Enter</kbd> önceki
+  sonuç. Büyük/küçük harf ve kesme işaretinin türü (' ’) fark etmez. Arama
+  kapanınca **Okuduğun yere dön** ile aramadan önceki yere dönülür. Liste
+  kelime çıkarırken saklanan cümlelerden gelir; Pi'de de anında çıkar.
+- **Seçili metni çevir:** sayfada bir cümle ya da paragraf seçince altında
+  **Çevir** düğmesi çıkar (en fazla 1500 karakter). Telefonda çeviri alttan açılır.
+- **Okuma görünümü** (yarım daire simgesi): Açık, Sepya, Gece. PDF sayfası bir
+  resim olarak çizildiği için renkler filtreyle değiştirilir: sepyada kâğıt sıcak
+  renge döner, gecede sayfa ters çevrilir. Seçim cihaz başına saklanır.
+
+## İstatistik
+
+Ana menüdeki **İstatistik** sayfasında günlük seri, bugünkü tekrarlar, son 30
+günün tekrarları (doğru / unutulan), doğruluk oranı ve çalışma süresi,
+önümüzdeki 14 günün tekrar yükü, kart durumları, kelime sayıları ve
+kitaplardaki ilerleme görünür. Bir karta bir dakikadan uzun bakılan süreler
+çalışma süresine bir dakika olarak eklenir.
+
 ## Kelimeler nasıl seçiliyor?
 
 PDF yüklendiğinde arka planda:
@@ -246,7 +268,10 @@ backend/app/
   study_api.py    flashcard API'si
   cards_api.py    kart tarayıcısı ve elle kart ekleme
   forms.py        kelime biçimleri (V1/V2/V3, çoğul, dereceler)
-  toc.py          içindekiler (PDF'in kendi listesi ya da bölüm başlıkları)  users.py        profiller ve profil seçimi
+  toc.py          içindekiler (PDF'in kendi listesi ya da bölüm başlıkları)
+  search.py       kitap içinde arama (sonuç listesi, sayfadaki kutular)
+  stats.py        istatistik sayfasının verisi
+  users.py        profiller ve profil seçimi
   db.py           SQLite bağlantısı ve şema göçleri
   config.py       ayarlar
   net.py          dış HTTP istekleri
@@ -256,10 +281,12 @@ frontend/
   reader.html     okuyucu
   study.html      flashcard çalışma
   cards.html      kart tarayıcısı
+  stats.html      istatistik
   sw.js           service worker (PWA önbelleği)
   manifest.webmanifest, icons/
-  js/             api.js, library.js, reader.js, panel.js, toc.js, study.js, cards.js, profiles.js
-  css/            app.css (ortak), library.css, reader.css, study.css, cards.css, profiles.css
+  js/             api.js, library.js, reader.js, panel.js, toc.js, search.js, selection.js,
+                  study.js, cards.js, stats.js, profiles.js
+  css/            app.css (ortak), library.css, reader.css, study.css, cards.css, stats.css, profiles.css
   vendor/         PDF.js 5.7.284 (legacy build), Literata ve IBM Plex Sans
 deploy/kitapokur.service
 run.sh
