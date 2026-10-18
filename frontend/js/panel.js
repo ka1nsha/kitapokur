@@ -40,6 +40,65 @@ export function emphasize(sentence, forms) {
   return [sentence.slice(0, m.index), strong, sentence.slice(m.index + m[0].length)];
 }
 
+// --- Kelime biçimleri (V1/V2/V3, çoğul, dereceler) ---------------------------
+
+const FORM_CELLS = {
+  verb: [["base", "V1"], ["past", "V2"], ["pp", "V3"], ["ing", "-ing"], ["s", "-s"]],
+  noun: [["base", "tekil"], ["plural", "çoğul"]],
+  adjective: [["base", "sıfat"], ["comparative", "daha"], ["superlative", "en"]],
+};
+const USED_LABEL = {
+  past: "geçmiş zaman (V2)",
+  pp: "üçüncü hâl (V3)",
+  "past+pp": "geçmiş zaman (V2) ya da V3",
+  ing: "-ing hâli",
+  s: "geniş zaman, he/she/it (-s)",
+  plural: "çoğul",
+  comparative: "karşılaştırma (daha …)",
+  superlative: "en üstünlük (en …)",
+};
+
+// Kitapta geçen kelimelerden (cümle ya da yüzey biçimleri) hangisinin çekimli
+// hâl olduğunu bulur: "went" → { form: "went", label: "geçmiş zaman (V2)" }.
+export function usedForm(forms, words) {
+  const seen = new Set(words.map((x) => x.toLowerCase()));
+  for (const f of forms || []) {
+    for (const [key] of FORM_CELLS[f.pos] || []) {
+      if (key === "base") continue;
+      const hit = (f[key] || []).find((x) => x !== f.base && seen.has(x));
+      if (!hit) continue;
+      const both = f.pos === "verb" && f.past.includes(hit) && f.pp.includes(hit);
+      return { form: hit, key: both ? "past+pp" : key, label: USED_LABEL[both ? "past+pp" : key] };
+    }
+  }
+  return null;
+}
+
+export function sentenceWords(sentence) {
+  return (sentence || "").toLowerCase().match(/[a-z]+(?:'[a-z]+)?/g) || [];
+}
+
+// Biçim tablosu; düzensiz biçimler amber, kitapta geçen biçim vurgulu.
+export function formsBlock(forms, used) {
+  if (!forms?.length) return null;
+  return h("div", { class: "word-forms" },
+    h("div", { class: "label" }, "Biçimler"),
+    forms.map((f) => h("div", { class: "forms-row" },
+      h("span", { class: "pos" }, POS_LABEL[f.pos] || f.pos),
+      h("div", { class: "cells" }, (FORM_CELLS[f.pos] || []).map(([key, caption]) => {
+        const values = key === "base" ? [f.base] : f[key] || [];
+        if (!values.length) return null;
+        const cls = ["cell"];
+        if (f.irregular?.includes(key)) cls.push("irregular");
+        if (used && values.includes(used.form)) cls.push("used");
+        return h("span", { class: cls.join(" ") },
+          h("span", { class: "cap" }, caption),
+          h("span", { class: "val", lang: "en" }, values.join(" / ")));
+      })))),
+    forms.some((f) => f.irregular?.length)
+      ? h("p", { class: "forms-note" }, "Renkli olanlar düzensiz: ezberlemek gerekir.") : null);
+}
+
 function h(tag, attrs = {}, ...children) {
   const el = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
@@ -299,6 +358,15 @@ export function createPanel({ bookId, goToPage }) {
         h("li", {}, h("span", { class: "pos" }, POS_LABEL[m.pos] || m.pos), " ", m.tr.slice(0, 5).join(", "))));
       slots.meanings.hidden = withTr.length === 0;
 
+      // Kitapta geçen hâl: önce sayfadaki yüzey biçimleri, yoksa cümlenin kelimeleri.
+      const used = usedForm(d.forms, w.surfaces?.length ? w.surfaces : sentenceWords(w.sentence));
+      if (used) {
+        slots.seen.hidden = false;
+        slots.seen.replaceChildren("Kitapta: ", h("strong", { lang: "en" }, used.form), ` · ${used.label}`);
+      }
+      const block = formsBlock(d.forms, used);
+      if (block) slots.forms.replaceWith(block);
+
       const def = (d.meanings || []).flatMap((m) => m.defs.map((x) => ({ ...x, pos: m.pos })))[0];
       slots.definition.replaceChildren(...(def ? [
         h("div", { class: "label" }, `Tanım · ${POS_LABEL[def.pos] || def.pos}`),
@@ -355,6 +423,8 @@ export function createPanel({ bookId, goToPage }) {
       definition: h("div", { class: "definition", hidden: true }),
       example: h("div", { class: "example", hidden: true }),
       sentenceTr: w.sentence ? h("p", { class: "quote-tr" }, "Çevriliyor…") : null,
+      seen: forms.length ? h("span", {}, `Metinde: ${forms.join(", ")}`) : h("span", { hidden: true }),
+      forms: h("div", { hidden: true }),
     };
     card.replaceChildren(
       h("div", { class: "top" },
@@ -362,7 +432,7 @@ export function createPanel({ bookId, goToPage }) {
           h("div", { class: "headword" },
             h("h3", { lang: "en" }, w.lemma),
             h("span", { class: `chip ${s}` }, STATUS_LABEL[s])),
-          h("div", { class: "forms" }, slots.phonetic, forms.length ? h("span", {}, `Metinde: ${forms.join(", ")}`) : null)),
+          h("div", { class: "forms" }, slots.phonetic, slots.seen)),
         h("div", { class: "head-buttons" },
           slots.speak,
           h("button", { type: "button", class: "close", "aria-label": "Kartı kapat", html: closeIcon, onclick: hideCard }))),
@@ -370,6 +440,7 @@ export function createPanel({ bookId, goToPage }) {
         h("div", { class: "label" }, "Google Çeviri"),
         slots.tr,
         slots.meanings),
+      slots.forms,
       w.sentence
         ? h("div", { class: "context" },
           h("div", { class: "label" }, `Kitaptan · sayfa ${w.page}`),

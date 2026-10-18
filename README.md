@@ -62,6 +62,16 @@ Okuyucuda:
 | İngilizce tanım, IPA, ses kaydı | Free Dictionary API, yanıt vermezse Wiktionary | Kelime kartı ilk açıldığında |
 | Kitaptaki cümlenin çevirisi | Google Çeviri | Kart açıldığında |
 | Örnek cümle + Türkçesi | Tatoeba (Pi'de yerel kopya) | Her zaman; internet gerekmez |
+| Biçimler (go · went · gone) | lemminflect (yerel) | Her zaman; internet gerekmez |
+
+**Kelime biçimleri.** Kelime kartında ve çalışma kartının arka yüzünde fiilin
+V1 · V2 · V3 · -ing · -s hâlleri, düzensiz isimlerin çoğulu (child → children)
+ve sıfatların dereceleri (good → better → best) gösterilir. Düzensiz biçimler
+amber renktedir. Kart ayrıca kelimenin kitapta hangi hâliyle geçtiğini yazar
+("Kitapta: went · geçmiş zaman (V2)"). Hangi türlerin gösterileceği sözlükten gelen
+tür bilgisiyle seçilir. Düzenli çoğullar (-s) ve "more beautiful" gibi kurallı
+dereceler kalabalık etmesin diye gösterilmez. Biçim verisi ilk kullanımda
+yüklenir ve ~50 MB bellek tutar.
 
 Her şey veritabanında saklanır; aynı kelime ya da cümle için bir daha internete
 çıkılmaz. "Öğren" denen kelimelerin bilgisi hemen alınır, böylece flashcard
@@ -229,6 +239,7 @@ backend/app/
   study.py        FSRS zamanlama, günlük sınır, istatistik
   study_api.py    flashcard API'si
   cards_api.py    kart tarayıcısı ve elle kart ekleme
+  forms.py        kelime biçimleri (V1/V2/V3, çoğul, dereceler)
   toc.py          içindekiler (PDF'in kendi listesi ya da bölüm başlıkları)  users.py        profiller ve profil seçimi
   db.py           SQLite bağlantısı ve şema göçleri
   config.py       ayarlar

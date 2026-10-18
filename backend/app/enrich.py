@@ -12,7 +12,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 
-from . import dictionary, net, tatoeba, words
+from . import dictionary, forms, net, tatoeba, words
 from .db import get_conn, transaction
 from .translate import get_translator
 
@@ -142,11 +142,13 @@ def word_details(word_id: int) -> dict:
         elif details is None:
             details = fetched
 
+    pos_list = [m["pos"] for m in (details or {}).get("meanings", [])]
     return {
         "id": row["id"],
         "lemma": row["lemma"],
         "translation": translation or None,
         **(details or {}),
+        "forms": forms.of(row["lemma"], pos_list),
         "examples": tatoeba.examples(row["lemma"]),
     }
 

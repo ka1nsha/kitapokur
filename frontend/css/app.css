@@ -172,3 +172,23 @@ dialog .actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap
   border: 1px solid rgba(255, 255, 255, .35); border-radius: 8px; background: transparent; color: var(--mint); cursor: pointer;
 }
 .toast-action:hover { background: rgba(255, 255, 255, .08); }
+
+/* Kelime biçimleri (okuyucu kartı ve çalışma kartı). */
+.word-forms { display: flex; flex-direction: column; gap: 8px; }
+.word-forms .forms-row { display: flex; align-items: flex-start; gap: 10px; }
+.word-forms .forms-row > .pos {
+  flex: none; min-width: 44px; margin-top: 10px; font-size: 12px; padding: 1px 7px; border-radius: 99px;
+  background: var(--bg-sunk); color: var(--ink-2); text-align: center;
+}
+.word-forms .cells { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.word-forms .cell {
+  display: flex; flex-direction: column; padding: 4px 10px 5px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--surface); min-width: 0;
+}
+.word-forms .cap { font-size: 11px; font-weight: 600; letter-spacing: .04em; color: var(--ink-3); }
+.word-forms .val { font-size: 15px; font-weight: 600; color: var(--ink); overflow-wrap: anywhere; }
+.word-forms .cell.irregular { background: var(--amber-soft); border-color: transparent; }
+.word-forms .cell.irregular .val { color: var(--amber); }
+.word-forms .cell.used { box-shadow: 0 0 0 2px var(--accent); }
+.word-forms .forms-note { margin: 0; font-size: 12px; color: var(--ink-3); }
+.used-form { margin: 0; font-size: 14px; color: var(--ink-2); }

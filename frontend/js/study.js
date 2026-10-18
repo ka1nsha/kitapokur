@@ -1,6 +1,6 @@
 // Flashcard çalışma ekranı.
 import { api, toast } from "./api.js";
-import { emphasize, POS_LABEL, speak, speakerIcon } from "./panel.js";
+import { emphasize, formsBlock, POS_LABEL, sentenceWords, speak, speakerIcon, usedForm } from "./panel.js";
 
 const $ = (id) => document.getElementById(id);
 const cardEl = $("flashcard");
@@ -118,6 +118,7 @@ function renderBack(card, mode) {
   const meanings = (d.meanings || []).filter((m) => m.tr?.length).slice(0, 3);
   const def = (d.meanings || []).flatMap((m) => m.defs.map((x) => ({ ...x, pos: m.pos })))[0];
   const ex = d.examples?.[0];
+  const used = usedForm(d.forms, sentenceWords(card.sentence));
   const big = mode === "classic" ? (card.translation || "Çeviri yok") : card.lemma;
   const sub = mode === "classic" ? [card.lemma, d.phonetic].filter(Boolean).join(" · ")
     : [d.phonetic, card.translation].filter(Boolean).join(" · ");
@@ -139,6 +140,8 @@ function renderBack(card, mode) {
         onclick: () => speak(card.lemma, d.audio) })),
     meanings.length ? h("ul", { class: "meanings" }, meanings.map((m) =>
       h("li", {}, h("span", { class: "pos" }, POS_LABEL[m.pos] || m.pos), m.tr.slice(0, 5).join(", ")))) : null,
+    used ? h("p", { class: "used-form" }, "Kitapta: ", h("strong", { lang: "en" }, used.form), ` · ${used.label}`) : null,
+    formsBlock(d.forms, used),
     card.note ? h("div", { class: "info note" }, h("span", { class: "label" }, "Notun"), h("p", {}, card.note)) : null,
     (card.sentence || def) ? h("div", { class: "info-grid" },
       card.sentence ? h("div", { class: "info context" },

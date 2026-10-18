@@ -24,7 +24,7 @@ def next_card(user: CurrentUser, book: int | None = Query(None)) -> dict:
         # Ayrıntılar genelde önbellekte; değilse burada bir kez alınır.
         try:
             details = enrich.word_details(data["card"]["word_id"])
-            data["card"]["details"] = {k: details.get(k) for k in ("phonetic", "audio", "meanings", "examples")}
+            data["card"]["details"] = {k: details.get(k) for k in ("phonetic", "audio", "meanings", "forms", "examples")}
             data["card"]["translation"] = data["card"]["translation"] or details.get("translation")
         except KeyError:
             data["card"]["details"] = None
