@@ -12,6 +12,10 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Okur">
 <link rel="preload" href="/vendor/fonts/literata-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<script>
+  // Seçili tema sayfa çizilmeden uygulanır (bkz. js/api.js).
+  try { var t = localStorage.getItem("okur.theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) { /* özel pencere */ }
+</script>
 <link rel="stylesheet" href="/css/app.css">
 <link rel="stylesheet" href="/css/library.css">
 <script type="module" src="/js/library.js"></script>
@@ -29,6 +33,7 @@
       <a href="/cards.html">Kartlar</a>
       <a href="/stats.html">İstatistik</a>
     </nav>
+    <button type="button" class="icon-btn plain theme-switch" id="theme-switch"></button>
     <a class="profile-chip" id="profile-chip" href="/profiles.html" hidden title="Profil değiştir">
       <span class="avatar-sm" aria-hidden="true"></span>
       <span class="chip-name"></span>

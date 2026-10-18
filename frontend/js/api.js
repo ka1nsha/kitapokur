@@ -189,6 +189,43 @@ export const icons = {
   alert: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/></svg>',
 };
 
+// --- Site teması (Sistem / Açık / Koyu) ---------------------------------------
+// "auto" cihazın açık/koyu ayarını izler; seçim cihaz başına saklanır. Her
+// sayfanın <head> bölümündeki küçük betik de aynısını boyamadan önce uygular.
+
+export const THEMES = { auto: "Sistem", light: "Açık", dark: "Koyu" };
+const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+export function siteTheme() {
+  try {
+    const t = localStorage.getItem("okur.theme");
+    return t === "light" || t === "dark" ? t : "auto";
+  } catch { return "auto"; }
+}
+
+export function isDark() {
+  const t = siteTheme();
+  return t === "dark" || (t === "auto" && darkQuery.matches);
+}
+
+function applySiteTheme() {
+  const t = siteTheme();
+  if (t === "auto") delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = t;
+  // Okuyucu, tarayıcı çubuğu rengini okuma görünümüne göre kendisi ayarlar.
+  if (!document.documentElement.dataset.reading) {
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", isDark() ? "#1A1D20" : "#FFFFFF");
+  }
+}
+
+export function setSiteTheme(t) {
+  try { localStorage.setItem("okur.theme", t); } catch { /* özel pencere */ }
+  applySiteTheme();
+}
+
+applySiteTheme();
+darkQuery.addEventListener("change", applySiteTheme);
+
 // Telefona kurulum ve bağlantı yokken açılış için (bkz. /sw.js). Tarayıcılar
 // service worker'ı yalnızca HTTPS'te ya da localhost'ta çalıştırır.
 if ("serviceWorker" in navigator && window.isSecureContext) {

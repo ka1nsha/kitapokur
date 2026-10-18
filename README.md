@@ -34,7 +34,18 @@ Web adresleri yeni sekmede açılır.
   **Çevir** düğmesi çıkar (en fazla 1500 karakter). Telefonda çeviri alttan açılır.
 - **Okuma görünümü** (yarım daire simgesi): Açık, Sepya, Gece. PDF sayfası bir
   resim olarak çizildiği için renkler filtreyle değiştirilir: sepyada kâğıt sıcak
-  renge döner, gecede sayfa ters çevrilir. Seçim cihaz başına saklanır.
+  renge döner, gecede sayfa ters çevrilir. Seçim cihaz başına saklanır; hiç
+  seçilmediyse site koyu temadayken Gece ile açılır.
+- **Bakıp dönme:** arama sonucuna, içindekilerden bir bölüme, PDF bağlantısına
+  ya da kelime kartındaki sayfaya atlamak okuma konumunu hemen değiştirmez.
+  Kitabı kapatırsan kaldığın yerden açılır; o sayfada kendin kaydırınca ya da
+  sayfa çevirince konum oraya geçer.
+
+## Site teması
+
+Kütüphanenin üst barındaki düğmeyle **Sistem → Açık → Koyu** arasında geçilir.
+Sistem, telefonun ya da bilgisayarın açık/koyu ayarını izler (varsayılan).
+Seçim cihaz başına saklanır ve bütün sayfalara uygulanır.
 
 ## İstatistik
 

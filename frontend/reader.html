@@ -15,8 +15,15 @@
 <link rel="stylesheet" href="/css/app.css">
 <link rel="stylesheet" href="/css/reader.css">
 <script>
-  // Okuma görünümü sayfa çizilmeden uygulanır (gece modunda beyaz parlama olmasın).
-  try { document.documentElement.dataset.reading = localStorage.getItem("okur.reading") || "light"; } catch { /* özel pencere */ }
+  // Site teması ve okuma görünümü sayfa çizilmeden uygulanır (beyaz parlama olmasın).
+  // Okuma görünümü hiç seçilmediyse koyu temada "Gece" ile açılır.
+  (function () {
+    var t = null, r = null;
+    try { t = localStorage.getItem("okur.theme"); r = localStorage.getItem("okur.reading"); } catch (e) { /* özel pencere */ }
+    if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+    var dark = t === "dark" || (t !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.reading = r || (dark ? "night" : "light");
+  })();
 </script>
 <script type="module" src="/js/reader.js"></script>
 </head>

@@ -54,7 +54,57 @@
   --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --radius: 10px;
   --shadow-page: 0 1px 2px rgba(26, 29, 31, .08), 0 12px 32px rgba(26, 29, 31, .10);
+  /* Renkli zemin üstündeki yazılar ve ikincil renkler (karanlık temada değişir). */
+  --on-accent: #FFFFFF;      /* vurgu, uyarı, amber zemin üstündeki yazı */
+  --on-inverse: #FFFFFF;     /* seçili "hap" düğmeler (--ink zemin) */
+  --on-inverse-2: #C9CDD0;
+  --label: #6B7278;          /* küçük büyük harfli etiketler */
+  --ink-strong: #22262A;     /* kart içindeki cümleler */
+  --context-ink: #0A4A3E;    /* --accent-soft zemin üstündeki yazı */
+  --blue: #1F5FA8;
+  --blue-soft: #E4EDF8;
+  --blue-line: #A9C3E3;
+  --danger-ink: #A1281C;
+  --danger-line: #E8B4AE;
+  --danger-hover: #861F19;
+  --amber-line: #E5C7A6;
+  --bar: #F8F9F7;            /* kartın alt düğme şeridi */
+  --row-hover: #FBFBFA;
+  --dash: #B9BEB6;           /* kesikli kenarlıklar */
   color-scheme: light;
+}
+
+/* Karanlık tema: sistem koyu moddaysa ya da kullanıcı "Koyu" seçtiyse
+   (data-theme, bkz. api.js). Değerler iki seçicide aynıdır. */
+:root[data-theme="dark"] {
+  --bg: #202427; --bg-sunk: #121416; --surface: #1A1D20; --line: #2C3236; --line-strong: #3B4247;
+  --ink: #E6E3DC; --ink-2: #C9C5BD; --ink-3: #9EA4A9;
+  --accent: #5CC2A8; --accent-hover: #7BD3BD; --accent-soft: #183B34;
+  --amber: #E3A462; --amber-soft: #3B2B19; --danger: #F08A80; --danger-soft: #3D211E;
+  --dark: #2A2F33; --dark-2: #353B40;
+  --shadow-page: 0 1px 2px rgba(0, 0, 0, .5), 0 12px 32px rgba(0, 0, 0, .45);
+  --on-accent: #0D1714; --on-inverse: #16191B; --on-inverse-2: #4A5157;
+  --label: #9EA4A9; --ink-strong: #E6E3DC; --context-ink: #A6E3D3;
+  --blue: #8DB8EA; --blue-soft: #1E2B3B; --blue-line: #36506E;
+  --danger-ink: #F08A80; --danger-line: #6B3530; --danger-hover: #F4A39B; --amber-line: #6A4B2C;
+  --bar: #16191B; --row-hover: #22272A; --dash: #4A5157;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #202427; --bg-sunk: #121416; --surface: #1A1D20; --line: #2C3236; --line-strong: #3B4247;
+    --ink: #E6E3DC; --ink-2: #C9C5BD; --ink-3: #9EA4A9;
+    --accent: #5CC2A8; --accent-hover: #7BD3BD; --accent-soft: #183B34;
+    --amber: #E3A462; --amber-soft: #3B2B19; --danger: #F08A80; --danger-soft: #3D211E;
+    --dark: #2A2F33; --dark-2: #353B40;
+    --shadow-page: 0 1px 2px rgba(0, 0, 0, .5), 0 12px 32px rgba(0, 0, 0, .45);
+    --on-accent: #0D1714; --on-inverse: #16191B; --on-inverse-2: #4A5157;
+    --label: #9EA4A9; --ink-strong: #E6E3DC; --context-ink: #A6E3D3;
+    --blue: #8DB8EA; --blue-soft: #1E2B3B; --blue-line: #36506E;
+    --danger-ink: #F08A80; --danger-line: #6B3530; --danger-hover: #F4A39B; --amber-line: #6A4B2C;
+    --bar: #16191B; --row-hover: #22272A; --dash: #4A5157;
+    color-scheme: dark;
+  }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -90,12 +140,12 @@ img { display: block; max-width: 100%; }
   transition: background-color .15s, border-color .15s, color .15s;
 }
 .btn svg { flex: none; }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-hover); color: #fff; }
+.btn-primary { background: var(--accent); color: var(--on-accent); }
+.btn-primary:hover { background: var(--accent-hover); color: var(--on-accent); }
 .btn-ghost { background: var(--surface); border-color: var(--line-strong); color: var(--ink); }
 .btn-ghost:hover { background: var(--bg); color: var(--ink); }
-.btn-danger { background: var(--danger); color: #fff; }
-.btn-danger:hover { background: #861F19; }
+.btn-danger { background: var(--danger); color: var(--on-accent); }
+.btn-danger:hover { background: var(--danger-hover); }
 .btn:disabled { opacity: .5; cursor: default; }
 
 .icon-btn {

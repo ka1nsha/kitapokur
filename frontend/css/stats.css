@@ -10,7 +10,7 @@
   background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px;
   display: flex; flex-direction: column; gap: 2px; min-width: 0;
 }
-.tile-label { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #6B7278; }
+.tile-label { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--label); }
 .tile-value { font-family: var(--serif); font-size: 30px; font-weight: 600; line-height: 1.2; color: var(--ink); }
 .tile-sub { font-size: 13px; color: var(--ink-3); }
 
@@ -46,7 +46,7 @@
 .dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
 .dot.ok, .dot.review { background: var(--accent); }
 .dot.bad { background: #E8A49B; }
-.dot.new { background: #1F5FA8; }
+.dot.new { background: var(--blue); }
 .dot.learning { background: var(--amber); }
 .dot.suspended { background: var(--line-strong); }
 
@@ -54,7 +54,7 @@
 
 .stack { display: flex; height: 14px; border-radius: 99px; overflow: hidden; background: var(--bg); gap: 2px; }
 .stack .part { min-width: 4px; }
-.part.new { background: #1F5FA8; }
+.part.new { background: var(--blue); }
 .part.learning { background: var(--amber); }
 .part.review { background: var(--accent); }
 .part.suspended { background: var(--line-strong); }

@@ -23,8 +23,8 @@
 }
 .filters button span { color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .filters button span:not(:empty)::before { content: "· "; }
-.filters button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
-.filters button[aria-pressed="true"] span { color: #C9CDD0; }
+.filters button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--on-inverse); }
+.filters button[aria-pressed="true"] span { color: var(--on-inverse-2); }
 
 .card-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .card-row {
@@ -32,7 +32,7 @@
   gap: 16px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px;
   background: var(--surface); color: var(--ink); cursor: pointer;
 }
-.card-row:hover { border-color: var(--line-strong); background: #FBFBFA; }
+.card-row:hover { border-color: var(--line-strong); background: var(--row-hover); }
 .card-row.is-suspended { opacity: .65; }
 .card-row .main { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .card-row .line1 { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
@@ -43,12 +43,12 @@
   overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;
 }
 .card-row .meta { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 13px; color: var(--ink-3); }
-.card-row .lapses { color: #A1281C; }
+.card-row .lapses { color: var(--danger-ink); }
 .card-row .side { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .card-row .due { font-size: 13px; color: var(--ink-3); white-space: nowrap; }
 
 .chip { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
-.chip.new { background: #E4EDF8; color: #1F5FA8; }
+.chip.new { background: var(--blue-soft); color: var(--blue); }
 .chip.learning { background: var(--amber-soft); color: var(--amber); }
 .chip.review { background: var(--accent-soft); color: var(--accent); }
 .chip.suspended { background: var(--bg-sunk); color: var(--ink-2); }
@@ -68,8 +68,8 @@ dialog p.edit-meta { margin-bottom: 16px; font-size: 14px; }
 .card-tools { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px; }
 .card-tools .btn { min-height: 40px; padding: 0 14px; font-size: 14px; font-weight: 500; }
 .card-tools .danger { color: var(--danger); }
-.card-tools .confirming { background: var(--danger); border-color: var(--danger); color: #fff; }
-.card-tools .confirming:hover { background: #861F19; color: #fff; }
+.card-tools .confirming { background: var(--danger); border-color: var(--danger); color: var(--on-accent); }
+.card-tools .confirming:hover { background: var(--danger-hover); color: var(--on-accent); }
 dialog .actions { border-top: 1px solid var(--line); padding-top: 16px; }
 .form-error { color: var(--danger) !important; margin: 0 0 4px !important; font-size: 14px; }
 

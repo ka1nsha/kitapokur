@@ -11,6 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Okur">
+<script>
+  // Seçili tema sayfa çizilmeden uygulanır (bkz. js/api.js).
+  try { var t = localStorage.getItem("okur.theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) { /* özel pencere */ }
+</script>
 <link rel="stylesheet" href="/css/app.css">
 <link rel="stylesheet" href="/css/study.css">
 <link rel="stylesheet" href="/css/cards.css">

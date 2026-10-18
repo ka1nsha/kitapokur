@@ -26,7 +26,7 @@
 }
 .profile .name { font-size: 17px; font-weight: 600; overflow-wrap: anywhere; }
 .profile .meta { font-size: 13px; color: var(--ink-3); }
-.profile.add .avatar { background: var(--surface); color: var(--accent); border: 2px dashed #B9BEB6; box-shadow: none; }
+.profile.add .avatar { background: var(--surface); color: var(--accent); border: 2px dashed var(--dash); box-shadow: none; }
 
 .manage-row { display: flex; gap: 6px; justify-content: center; }
 .manage-row .btn { min-height: 36px; padding: 0 12px; font-size: 14px; font-weight: 500; }
@@ -39,7 +39,7 @@
 .swatch { position: relative; }
 .swatch input { position: absolute; opacity: 0; width: 44px; height: 44px; margin: 0; cursor: pointer; }
 .swatch span { display: block; width: 44px; height: 44px; border-radius: 12px; border: 3px solid transparent; }
-.swatch input:checked + span { border-color: var(--ink); box-shadow: inset 0 0 0 2px #fff; }
+.swatch input:checked + span { border-color: var(--ink); box-shadow: inset 0 0 0 2px var(--surface); }
 .swatch input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
 .form-error { color: var(--danger); font-size: 14px; margin: 0; text-align: left; }
 dialog { text-align: left; }

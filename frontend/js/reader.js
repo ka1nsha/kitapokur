@@ -1,5 +1,5 @@
 import * as pdfjsLib from "/vendor/pdfjs/pdf.min.mjs";
-import { api, toast } from "./api.js";
+import { api, isDark, toast } from "./api.js";
 import { createPanel } from "./panel.js";
 import { createSearch } from "./search.js";
 import { createSelectionTranslate } from "./selection.js";
@@ -29,7 +29,7 @@ const pageInput = $("page-input");
 const saveState = $("save-state");
 
 const bookId = Number(new URLSearchParams(location.search).get("book"));
-const panel = createPanel({ bookId, goToPage: (n) => goToPage(n) });
+const panel = createPanel({ bookId, goToPage: (n) => goToPage(n, { peek: true }) });
 const toc = createToc({ bookId, goTo: (page, offset) => goToPosition(page, offset) });
 const search = createSearch({
   bookId,
@@ -53,6 +53,7 @@ const state = {
   pages: [],       // { el, canvas, textLayer, linkLayer, renderedScale, task, busy }
   current: 1,
   ready: false,    // ilk konum geri yüklenmeden kayıt yapılmaz
+  peek: false,     // atlamadan sonra okur kaydırana kadar konum kaydedilmez
   dirty: false,
   saveTimer: null,
   lastSaved: null,
@@ -404,7 +405,24 @@ function updatePageUi() {
   $("next").disabled = state.current >= total;
 }
 
-function goToPage(n) {
+// --- Bakıp dönme (atlamalar) -----------------------------------------------------
+// Arama, içindekiler, PDF bağlantısı ya da kelime kartından bir sayfaya
+// atlamak okuma konumunu hemen değiştirmez: kitap kapanırsa okunan yerden
+// açılır. Okur o sayfada kendisi kaydırınca ya da sayfa çevirince konum
+// yeniden kaydedilmeye başlar.
+
+function beginPeek() {
+  if (state.dirty) save();  // atlamadan önceki (henüz kaydedilmemiş) konum kaybolmasın
+  clearTimeout(state.saveTimer);
+  state.peek = true;
+}
+
+function endPeek() {
+  state.peek = false;
+}
+
+function goToPage(n, { peek = false } = {}) {
+  if (peek) beginPeek(); else endPeek();
   const total = state.sizes.length;
   const page = Math.min(Math.max(Math.round(n) || 1, 1), total);
   viewer.scrollTop = state.tops[page - 1] - PAD_Y / 2;
@@ -415,8 +433,9 @@ function goToPage(n) {
 
 // Sayfa içindeki bir konuma git. Hedef (bölüm başlığı, bağlantı) ekranın
 // üstüne gelir; exact ise kaydedilen okuma konumu gibi okuma çizgisine.
-function goToPosition(page, offset, { exact = false } = {}) {
+function goToPosition(page, offset, { exact = false, peek = true } = {}) {
   if (!state.sizes.length) return;
+  if (peek) beginPeek();
   if (exact) scrollToPosition(page, offset);
   else {
     const i = Math.min(Math.max(page, 1), state.sizes.length) - 1;
@@ -440,7 +459,7 @@ function zoomStep(dir) {
 // --- Konum kaydı ------------------------------------------------------------
 
 function markDirty() {
-  if (!state.ready) return;
+  if (!state.ready || state.peek) return;
   state.dirty = true;
   clearTimeout(state.saveTimer);
   state.saveTimer = setTimeout(save, SAVE_DELAY);
@@ -562,6 +581,17 @@ viewer.addEventListener("scroll", () => {
   markDirty();
 }, { passive: true });
 
+// Okurun kendisi kaydırınca (tekerlek, dokunma, kaydırma çubuğu, tuşlar)
+// atlamadan sonraki bekleme biter; konum yeniden kaydedilir.
+for (const type of ["wheel", "touchstart", "pointerdown"]) {
+  viewer.addEventListener(type, endPeek, { passive: true });
+}
+document.addEventListener("keydown", (e) => {
+  if (["PageDown", "PageUp", "ArrowDown", "ArrowUp", " "].includes(e.key) && !e.target.closest("input, textarea, select, button")) {
+    endPeek();
+  }
+});
+
 // Pencere boyutu ya da kelime panelinin açılıp kapanması okuma alanını değiştirir.
 let resizeTimer;
 let lastWidth = 0;
@@ -615,14 +645,16 @@ const READING_THEMES = ["light", "sepia", "night"];
 const themeToggle = $("theme-toggle");
 const themePop = $("theme-pop");
 
-function applyReadingTheme(theme) {
+// save: yalnızca okur bir görünüm seçtiğinde saklanır; seçilmediyse görünüm
+// site temasını izler (koyu temada gece).
+function applyReadingTheme(theme, { save = false } = {}) {
   if (!READING_THEMES.includes(theme)) theme = "light";
   document.documentElement.dataset.reading = theme;
-  try { localStorage.setItem("okur.reading", theme); } catch { /* özel pencere */ }
+  if (save) try { localStorage.setItem("okur.reading", theme); } catch { /* özel pencere */ }
   themePop.querySelectorAll("[data-reading]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.reading === theme)));
   // Tarayıcı çubuğunun rengi de görünüme uysun (telefonda).
   document.querySelector('meta[name="theme-color"]')?.setAttribute("content",
-    { light: "#FFFFFF", sepia: "#F3EAD6", night: "#16191B" }[theme]);
+    { light: isDark() ? "#1A1D20" : "#FFFFFF", sepia: "#F3EAD6", night: "#16191B" }[theme]);
 }
 
 function setThemePop(open) {
@@ -636,7 +668,7 @@ themeToggle.addEventListener("click", () => setThemePop(themePop.hidden));
 themePop.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-reading]");
   if (!btn) return;
-  applyReadingTheme(btn.dataset.reading);
+  applyReadingTheme(btn.dataset.reading, { save: true });
   setThemePop(false);
   themeToggle.focus();
 });

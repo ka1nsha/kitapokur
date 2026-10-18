@@ -12,7 +12,7 @@
 .main-nav a:hover { background: var(--bg); color: var(--ink); }
 .main-nav a[aria-current="page"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 .badge {
-  min-width: 22px; padding: 1px 8px; border-radius: 99px; background: var(--amber); color: #fff;
+  min-width: 22px; padding: 1px 8px; border-radius: 99px; background: var(--amber); color: var(--on-accent);
   font-size: 12px; font-weight: 600; text-align: center;
 }
 
@@ -87,7 +87,7 @@
   font: inherit; font-size: 14px; min-height: 40px; padding: 0 14px; border-radius: 99px;
   border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-2); cursor: pointer;
 }
-.sort button[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: #fff; }
+.sort button[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--on-inverse); }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
 @media (max-width: 600px) {
@@ -126,7 +126,7 @@
 .card-menu-btn {
   position: absolute; z-index: 2; top: 20px; right: 20px;
   width: 36px; height: 36px; border-radius: 99px; border: 0;
-  background: rgba(255, 255, 255, .92); color: var(--ink);
+  background: var(--surface); color: var(--ink);
   display: flex; align-items: center; justify-content: center; cursor: pointer;
   box-shadow: 0 1px 4px rgba(26, 29, 31, .2);
 }
@@ -169,10 +169,10 @@
 
 .add-tile {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
-  min-height: 280px; padding: 24px; border: 2px dashed #B9BEB6; border-radius: 14px;
+  min-height: 280px; padding: 24px; border: 2px dashed var(--dash); border-radius: 14px;
   color: var(--ink-2); text-align: center; cursor: pointer;
 }
-.add-tile:hover { border-color: var(--accent); background: rgba(227, 240, 236, .4); }
+.add-tile:hover { border-color: var(--accent); background: var(--accent-soft); }
 .add-tile .circle {
   width: 52px; height: 52px; border-radius: 99px; background: var(--accent-soft); color: var(--accent);
   display: flex; align-items: center; justify-content: center;
