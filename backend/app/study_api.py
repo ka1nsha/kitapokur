@@ -28,12 +28,18 @@ def next_card(user: CurrentUser, book: int | None = Query(None)) -> dict:
             data["card"]["translation"] = data["card"]["translation"] or details.get("translation")
         except KeyError:
             data["card"]["details"] = None
+        card = data["card"]
+        meanings = (card["details"] or {}).get("meanings") or []
+        card["choices"] = study.choices(
+            card["word_id"], card["translation"], (card["book"] or {}).get("id"),
+            meanings[0]["pos"] if meanings else None,
+        )
     return data
 
 
 class Review(BaseModel):
     rating: int = Field(..., ge=1, le=4)
-    mode: Literal["classic", "reverse", "cloze"] | None = None
+    mode: Literal["classic", "reverse", "cloze", "choice"] | None = None
     duration_ms: int | None = Field(None, ge=0, le=3_600_000)
 
 

@@ -5,6 +5,7 @@ tekrar zamanını hesaplar: zorlanılan kelimeler sık, iyi bilinenler seyrek ge
 """
 
 import json
+import random
 import re
 import time
 from datetime import datetime, timedelta, timezone
@@ -166,6 +167,77 @@ def card_json(row) -> dict:
         "cloze": _cloze(row["sentence"], w["lemma"]),
         "intervals": _previews(_load(row)),
     }
+
+
+# --- Çoktan seçmeli -------------------------------------------------------------------
+
+CHOICE_COUNT = 3  # yanlış şık sayısı
+_CHOICE_POOL = 40
+
+
+def _is_verb_tr(text: str) -> bool:
+    return bool(re.search(r"m[ae]k\b", text.split(",")[0].strip().lower()))
+
+
+def _terms(text: str) -> set[str]:
+    return {t.strip().lower() for t in re.split(r"[,;/]", text) if t.strip()}
+
+
+def choices(word_id: int, translation: str | None, book_id: int | None, pos: str | None) -> list[dict]:
+    """Çoktan seçmeli için yanlış şıklar: aynı kitaptan, sıklığı ve türü benzer kelimeler.
+
+    Benzer sıklıktaki kelimeler kolayca elenemez; anlamı doğru cevapla
+    örtüşen (aynı ya da birinin içinde geçen) çeviriler şık olarak alınmaz.
+    """
+    if not translation:
+        return []
+    conn = get_conn()
+    zipf = conn.execute("SELECT zipf FROM words WHERE id = ?", (word_id,)).fetchone()
+    zipf = zipf["zipf"] if zipf else 3.5
+    scope = "AND w.id IN (SELECT word_id FROM book_words WHERE book_id = ? AND is_proper = 0)" if book_id else ""
+    rows = conn.execute(
+        f"""
+        SELECT w.lemma, w.translation, w.details FROM words w
+         WHERE w.id != ? AND w.translation IS NOT NULL AND w.translation != '' {scope}
+         ORDER BY ABS(w.zipf - ?) LIMIT ?
+        """,
+        (word_id, *((book_id,) if book_id else ()), zipf, _CHOICE_POOL),
+    ).fetchall()
+
+    correct = _terms(translation)
+    flat = translation.strip().lower()
+    verb = _is_verb_tr(translation) if pos is None else pos == "verb"
+    candidates = []
+    for r in rows:
+        tr = r["translation"].strip()
+        terms = _terms(tr)
+        if terms & correct or tr.lower() in flat or flat in tr.lower():
+            continue
+        # Sözlük bilgisi çoğu kelimede henüz yok; Türkçe çevirinin -mak/-mek
+        # ekiyle en azından fiiller fiillerle, diğerleri diğerleriyle eşleşir.
+        rank = 1 if _is_verb_tr(tr) == verb else 2
+        if pos and r["details"]:
+            meanings = json.loads(r["details"]).get("meanings") or []
+            if meanings and meanings[0].get("pos") == pos:
+                rank = 0
+        candidates.append((rank, random.random(), r["lemma"], tr))
+    candidates.sort()
+
+    out, seen = [], set()
+    for _, _, lemma, tr in candidates:
+        if tr.lower() in seen:
+            continue
+        seen.add(tr.lower())
+        out.append({"lemma": lemma, "translation": tr})
+        if len(out) == CHOICE_COUNT:
+            break
+    if len(out) < CHOICE_COUNT and book_id:
+        # Kısa kitaplarda yeterli aday yoksa tüm kelimelerden tamamla.
+        for extra in choices(word_id, translation, None, pos):
+            if extra["translation"].lower() not in seen and len(out) < CHOICE_COUNT:
+                seen.add(extra["translation"].lower())
+                out.append(extra)
+    return out
 
 
 # --- Cevap ------------------------------------------------------------------------

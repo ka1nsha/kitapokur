@@ -97,7 +97,13 @@ bellek tamamen geri döner. Elle çalıştırmak için `cd backend && python -m 
   (Anki'nin yeni algoritması, hedef hatırlama oranı %90).
 - Günlük yeni kart sınırı (varsayılan 20) çalışma ekranından değiştirilir. Gün sabah 4'te döner.
 - Alıştırma türleri: **Klasik** (İngilizce → Türkçe), **Tersten** (Türkçe → İngilizce),
-  **Boşluk doldurma** (kitaptaki cümlede kelime boş bırakılır), **Karışık**.
+  **Boşluk doldurma** (kitaptaki cümlede kelime boş bırakılır), **Çoktan seçmeli**, **Karışık**.
+- **Çoktan seçmeli:** İngilizce kelime ve kitaptaki cümlesi gösterilir, dört Türkçe
+  anlamdan biri seçilir. Yanlış şıklar aynı kitaptan, sıklığı ve türü benzer
+  kelimelerden gelir (fiile fiil, isme isim). Anlamı doğru cevapla örtüşen şıklar
+  alınmaz. Doğru cevap "İyi", yanlış cevap "Tekrar" sayılır. Doğru ama tahminle
+  bilinen cevap için **Tahminle bildim** ("Zor") seçilebilir. Telefonda şıklar alt
+  alta, büyük düğmeler olarak çıkar. Kısayol: <kbd>1</kbd>–<kbd>4</kbd> şık seçer.
 - Deste tüm kitaplar ya da tek bir kitap olarak seçilebilir.
 - Kısayollar: <kbd>Boşluk</kbd> cevabı göster, <kbd>1</kbd>–<kbd>4</kbd> puanla, <kbd>S</kbd> dinle.
 - Bir kelimeye sonradan "Biliyorum" denirse kartı askıya alınır, geçmişi silinmez.

@@ -7,7 +7,7 @@ const cardEl = $("flashcard");
 const messageEl = $("study-message");
 const deckSelect = $("deck-select");
 const newPerDay = $("new-per-day");
-const MODES = ["classic", "reverse", "cloze"];
+const MODES = ["classic", "reverse", "cloze", "choice"];
 
 const state = {
   book: new URLSearchParams(location.search).get("book") || "",
@@ -15,6 +15,8 @@ const state = {
   card: null,
   shownMode: "classic",
   revealed: false,
+  options: [],     // çoktan seçmeli şıklar (karışık sırada)
+  picked: null,    // seçilen şıkkın sırası
   shownAt: 0,
   done: 0,
   busy: false,
@@ -69,7 +71,28 @@ function pickMode(card) {
   // Boşluk doldurma için kitaptan cümle, tersten kart için çeviri gerekir.
   if (mode === "cloze" && !card.cloze) mode = "classic";
   if (mode === "reverse" && !card.translation) mode = "classic";
+  // Çoktan seçmeli için çeviri ve üç yanlış şık gerekir.
+  if (mode === "choice" && (!card.translation || (card.choices || []).length < 3)) mode = "classic";
   return mode;
+}
+
+// Kartı seçilen alıştırma türüne hazırlar; şıklar her kartta bir kez karıştırılır.
+function prepare(card) {
+  state.shownMode = pickMode(card);
+  state.revealed = false;
+  state.picked = null;
+  state.options = state.shownMode === "choice"
+    ? shuffle([{ text: card.translation, correct: true },
+      ...card.choices.slice(0, 3).map((c) => ({ text: c.translation, correct: false }))])
+    : [];
+}
+
+function shuffle(items) {
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [items[i], items[j]] = [items[j], items[i]];
+  }
+  return items;
 }
 
 // --- Kartı çiz ----------------------------------------------------------------------
@@ -105,6 +128,14 @@ function renderFront(card, mode) {
       h("span", { class: "big" }, "Boşluğu doldur"),
       h("span", { class: "sub" }, card.translation ? `ipucu: ${card.translation}` : "ipucu yok"),
       sentenceWithWord(card, { blank: true }));
+  }
+  if (mode === "choice") {
+    return h("div", { class: "front" },
+      h("span", { class: "source" }, sourceLabel(card)),
+      h("span", { class: "big", lang: "en" }, card.lemma),
+      h("span", { class: "sub" }, [d.phonetic ? h("span", { class: "mono", lang: "en" }, d.phonetic) : null,
+        d.phonetic ? " · " : null, "Anlamı hangisi?"]),
+      sentenceWithWord(card));
   }
   return h("div", { class: "front" },
     h("span", { class: "source" }, sourceLabel(card)),
@@ -164,11 +195,48 @@ const RATINGS = [
   { value: 4, key: "easy", label: "Kolay" },
 ];
 
+// Doğru şık "İyi", yanlış şık "Tekrar" sayılır; tahminle bilinen doğru cevap "Zor" işaretlenebilir.
+function renderChoices(card) {
+  const done = state.picked !== null;
+  const list = h("div", { class: "choices", role: "group", "aria-label": "Doğru anlamı seç" },
+    state.options.map((o, i) => {
+      let cls = "choice";
+      if (done && o.correct) cls += " correct";
+      else if (done && i === state.picked) cls += " wrong";
+      return h("button", {
+        type: "button", class: cls, disabled: done, "aria-keyshortcuts": String(i + 1),
+        onclick: () => pick(i),
+      }, h("span", { class: "key", "aria-hidden": "true" }, String(i + 1)), h("span", { class: "text" }, o.text));
+    }));
+  if (!done) return [list];
+
+  const right = state.options[state.picked].correct;
+  const verdict = h("p", { class: `verdict ${right ? "ok" : "bad"}`, role: "status" },
+    right ? "Doğru!" : `Yanlış. Doğrusu: ${card.translation}`);
+  const next = (rating, label, primary) => h("button", {
+    type: "button", class: `btn ${primary ? "btn-primary" : "btn-ghost"} next`, onclick: () => answer(rating),
+  }, label, h("span", { class: "r-ivl" }, formatInterval(card.intervals[rating])));
+  return [list, verdict, renderBack(card, "classic"),
+    h("div", { class: "choice-actions" }, right
+      ? [next(2, "Tahminle bildim", false), next(3, "Devam", true)]
+      : [next(1, "Devam", true)])];
+}
+
+function pick(i) {
+  if (state.picked !== null || !state.card) return;
+  state.picked = i;
+  state.revealed = true;
+  render();
+  cardEl.querySelector(".choice-actions .btn-primary")?.focus({ preventScroll: true });
+}
+
 function render() {
   const card = state.card;
   const mode = state.shownMode;
   const parts = [renderFront(card, mode)];
-  if (!state.revealed) {
+  if (mode === "choice") {
+    parts.push(...renderChoices(card));
+  } else if (!state.revealed) {
     parts.push(h("div", { class: "reveal-row" },
       h("button", { type: "button", class: "reveal", id: "reveal", onclick: reveal }, "Cevabı göster")));
   } else {
@@ -200,11 +268,10 @@ function show(data) {
   updateCounts(data.counts);
   if (data.card) {
     state.card = data.card;
-    state.shownMode = pickMode(data.card);
-    state.revealed = false;
+    prepare(data.card);
     state.shownAt = performance.now();
     render();
-    $("reveal")?.focus({ preventScroll: true });
+    ($("reveal") || cardEl.querySelector(".choice"))?.focus({ preventScroll: true });
     return;
   }
   state.card = null;
@@ -256,7 +323,7 @@ async function load() {
 async function answer(rating) {
   if (!state.card || !state.revealed || state.busy) return;
   state.busy = true;
-  cardEl.querySelectorAll(".rate").forEach((b) => { b.disabled = true; });
+  cardEl.querySelectorAll(".rate, .next").forEach((b) => { b.disabled = true; });
   const duration = Math.round(performance.now() - state.shownAt);
   try {
     const data = await api.studyReview(state.card.id, { rating, mode: state.shownMode, duration_ms: duration }, state.book);
@@ -264,7 +331,7 @@ async function answer(rating) {
     show(data);
   } catch (err) {
     toast(`Kaydedilemedi: ${err.message}`, { error: true });
-    cardEl.querySelectorAll(".rate").forEach((b) => { b.disabled = false; });
+    cardEl.querySelectorAll(".rate, .next").forEach((b) => { b.disabled = false; });
   } finally {
     state.busy = false;
   }
@@ -277,8 +344,7 @@ function setMode(mode) {
   writePref("okur.studyMode", mode);
   document.querySelectorAll(".modes button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
   if (state.card) {
-    state.shownMode = pickMode(state.card);
-    state.revealed = false;
+    prepare(state.card);
     render();
   }
 }
@@ -306,6 +372,16 @@ newPerDay.addEventListener("change", async () => {
 
 document.addEventListener("keydown", (e) => {
   if (e.ctrlKey || e.metaKey || e.altKey || e.target.closest("input, select, textarea")) return;
+  if (state.card && state.shownMode === "choice") {
+    // 1–4 şık seçer; seçimden sonra Enter/Boşluk "Devam" eder (odak o düğmede).
+    if (state.picked === null && ["1", "2", "3", "4"].includes(e.key)) {
+      e.preventDefault();
+      pick(Number(e.key) - 1);
+    } else if (e.key === "s" || e.key === "S") {
+      speak(state.card.lemma, state.card.details?.audio);
+    }
+    return;
+  }
   if ((e.key === " " || e.key === "Enter") && !state.revealed && state.card) {
     e.preventDefault();
     reveal();

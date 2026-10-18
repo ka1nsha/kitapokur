@@ -112,6 +112,36 @@
 .rate:hover { filter: brightness(.97); }
 .rate:disabled { opacity: .6; cursor: default; }
 
+/* --- Çoktan seçmeli ----------------------------------------------------------- */
+
+.choices { padding: 0 8% 28px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.choice {
+  font: inherit; font-size: 17px; font-weight: 500; text-align: left; min-height: 60px; padding: 10px 14px;
+  border: 1px solid var(--line-strong); border-radius: 12px; background: var(--surface); color: var(--ink);
+  display: flex; align-items: center; gap: 12px; cursor: pointer; touch-action: manipulation;
+}
+.choice .key {
+  flex: none; width: 26px; height: 26px; border-radius: 7px; background: var(--bg-sunk); color: var(--ink-3);
+  font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center;
+}
+.choice .text { min-width: 0; overflow-wrap: anywhere; }
+.choice:hover:not(:disabled) { border-color: var(--ink-3); background: var(--bg); }
+.choice:disabled { cursor: default; color: var(--ink-3); }
+.choice.correct { border-color: var(--accent); background: var(--accent-soft); color: #0A4A3E; font-weight: 600; }
+.choice.correct .key { background: var(--accent); color: #fff; }
+.choice.wrong { border-color: #E8B4AE; background: var(--danger-soft); color: var(--danger); }
+.choice.wrong .key { background: var(--danger); color: #fff; }
+.verdict { margin: -12px 8% 20px; font-size: 16px; font-weight: 600; text-align: center; }
+.verdict.ok { color: var(--accent); }
+.verdict.bad { color: var(--danger); }
+.choice-actions {
+  background: #F8F9F7; border-top: 1px solid var(--line); padding: 16px 8%;
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+.choice-actions .btn { min-height: 52px; padding: 0 22px; display: flex; flex-direction: column; justify-content: center; gap: 0; }
+.choice-actions .r-ivl { font-size: 12px; font-weight: 400; opacity: .8; }
+.choice-actions .btn:disabled { opacity: .6; }
+
 .study-message {
   background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 48px 8%;
   text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center;
@@ -143,5 +173,13 @@ kbd {
   .back-side { padding: 20px 18px 24px; }
   .ratings { padding: 12px; gap: 6px; }
   .reveal-row { padding: 0 18px 24px; }
+  /* Beş tür tek satırda kalsın; sığmazsa yana kaydırılır. */
+  .modes { flex-wrap: nowrap; overflow-x: auto; margin: 0 -12px; padding: 0 12px; scrollbar-width: none; }
+  .modes button { flex: none; }
+  .choices { grid-template-columns: 1fr; padding: 0 14px 20px; gap: 8px; }
+  .choice { min-height: 56px; font-size: 16px; }
+  .verdict { margin: -8px 14px 16px; }
+  .choice-actions { padding: 12px; }
+  .choice-actions .btn { flex: 1; }
   .footnote kbd, .footnote .keys { display: none; }
 }
