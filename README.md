@@ -47,6 +47,15 @@ Kütüphanenin üst barındaki düğmeyle **Sistem → Açık → Koyu** arasın
 Sistem, telefonun ya da bilgisayarın açık/koyu ayarını izler (varsayılan).
 Seçim cihaz başına saklanır ve bütün sayfalara uygulanır.
 
+## Gramer
+
+Ana menüdeki **Gramer** sayfası, İngilizce dilbilgisinin temel konularını
+(zamanlar, artikeller, çoğullar, karşılaştırma, modal fiiller, zaman/yer
+edatları) kısa Türkçe açıklama, yapı kalıbı ve örnek cümlelerle (EN + TR)
+anlatır. Her konunun altında birkaç çoktan seçmeli alıştırma vardır; seçim
+yapıldığında doğru cevap ve kısa bir açıklama gösterilir. İçerik tamamen
+istemci tarafındadır; sunucuya ihtiyaç duymaz ve çevrimdışı da açılır.
+
 ## İstatistik
 
 Ana menüdeki **İstatistik** sayfasında günlük seri, bugünkü tekrarlar, son 30
@@ -294,11 +303,13 @@ frontend/
   study.html      flashcard çalışma
   cards.html      kart tarayıcısı
   stats.html      istatistik
+  grammar.html    gramer çalışma sayfası
   sw.js           service worker (PWA önbelleği)
   manifest.webmanifest, icons/
   js/             api.js, library.js, reader.js, panel.js, toc.js, search.js, selection.js,
-                  study.js, cards.js, stats.js, profiles.js
-  css/            app.css (ortak), library.css, reader.css, study.css, cards.css, stats.css, profiles.css
+                  study.js, cards.js, stats.js, grammar.js, profiles.js
+  css/            app.css (ortak), library.css, reader.css, study.css, cards.css, stats.css,
+                  grammar.css, profiles.css
   vendor/         PDF.js 5.7.284 (legacy build), Literata ve IBM Plex Sans
 deploy/kitapokur.service
 run.sh

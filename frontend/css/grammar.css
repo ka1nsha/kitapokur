@@ -1,0 +1,94 @@
+.grammar-page {
+  width: 100%; max-width: 820px; margin: 0 auto; padding: 20px 20px 56px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.lead { margin: 0; font-size: 15px; color: var(--ink-3); line-height: 1.6; }
+
+/* --- Konu çubuğu ---------------------------------------------------------- */
+
+.topic-nav {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; gap: 8px; flex-wrap: wrap;
+  padding: 12px 0; margin: -8px 0 0;
+  background: var(--bg);
+}
+.chip {
+  flex: none; padding: 6px 12px; border-radius: 99px;
+  border: 1px solid var(--line-strong); background: var(--surface);
+  color: var(--ink-2); font-size: 13px; font-weight: 600; text-decoration: none;
+}
+.chip:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+/* --- Konu kartı ----------------------------------------------------------- */
+
+.topic {
+  scroll-margin-top: 64px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: 20px 22px; display: flex; flex-direction: column; gap: 14px;
+}
+.topic-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.topic-head h2 { margin: 0; font-family: var(--serif); font-size: 21px; font-weight: 600; }
+.topic-en { font-size: 13px; font-weight: 600; letter-spacing: .04em; color: var(--label); }
+.explain { margin: 0; font-size: 15px; line-height: 1.65; color: var(--ink-2); }
+
+/* --- Yapı tablosu --------------------------------------------------------- */
+
+.struct { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.struct-row { display: flex; gap: 12px; padding: 9px 14px; border-top: 1px solid var(--line); }
+.struct-row:first-child { border-top: 0; }
+.struct-label {
+  flex: 0 0 96px; font-size: 12px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--label); padding-top: 2px;
+}
+.struct-body { flex: 1; min-width: 0; color: var(--ink); }
+
+/* --- Örnekler ------------------------------------------------------------- */
+
+.examples { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.examples li {
+  display: flex; flex-direction: column; gap: 2px;
+  padding-left: 14px; border-left: 3px solid var(--accent-soft);
+}
+.ex-en { font-weight: 600; color: var(--ink-strong); }
+.ex-tr { font-size: 14px; color: var(--ink-3); }
+
+.hint {
+  margin: 0; padding: 11px 14px; border-radius: 10px;
+  background: var(--amber-soft); border: 1px solid var(--amber-line);
+  font-size: 14px; line-height: 1.6; color: var(--ink-2);
+}
+.hint strong { color: var(--amber); }
+
+/* --- Alıştırma ------------------------------------------------------------ */
+
+.practice { display: flex; flex-direction: column; gap: 12px; padding-top: 4px; }
+.practice-title { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--label); }
+.q { display: flex; flex-direction: column; gap: 8px; }
+.q-text { margin: 0; font-size: 15px; color: var(--ink); }
+.blank {
+  display: inline-block; min-width: 54px; text-align: center;
+  border-bottom: 2px solid var(--line-strong); color: transparent; user-select: none;
+}
+.opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.opt {
+  flex: 1 1 auto; min-width: 88px; min-height: 42px; padding: 0 16px;
+  border: 1px solid var(--line-strong); border-radius: 10px;
+  background: var(--surface); color: var(--ink); font-size: 15px; cursor: pointer;
+}
+.opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+.opt:disabled { cursor: default; }
+.opt.right { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.opt.wrong { border-color: var(--danger); background: var(--danger-soft); color: var(--danger); }
+.q-feedback { margin: 0; font-size: 14px; line-height: 1.55; color: var(--ink-3); min-height: 0; }
+.q-feedback.ok { color: var(--accent); }
+.q-feedback.bad { color: var(--danger); }
+
+@media (max-width: 640px) {
+  .grammar-page { padding: 12px 12px 40px; gap: 12px; }
+  .topic { padding: 16px 16px; border-radius: 14px; }
+  .topic-head h2 { font-size: 19px; }
+  .struct-row { flex-direction: column; gap: 2px; }
+  .struct-label { flex: none; }
+  .opt { flex: 1 1 100%; }
+}

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FFFFFF">
+<title>Okur · Gramer</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Okur">
+<script>
+  // Seçili tema sayfa çizilmeden uygulanır (bkz. js/api.js).
+  try { var t = localStorage.getItem("okur.theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) { /* özel pencere */ }
+</script>
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="/css/study.css">
+<link rel="stylesheet" href="/css/grammar.css">
+<script type="module" src="/js/grammar.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="study-bar">
+    <div class="study-bar-left">
+      <a class="back" href="/">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>Kütüphane</span>
+      </a>
+      <h1>Gramer</h1>
+    </div>
+    <div class="bar-actions">
+      <a class="btn btn-ghost" href="/cards.html">Kartlar</a>
+      <a class="btn btn-primary" href="/study.html">Çalış</a>
+    </div>
+  </div>
+</header>
+
+<main class="grammar-page">
+  <p class="lead">İngilizce dilbilgisinin temel konuları: her başlıkta kısa bir açıklama, kalıp, örnek cümleler ve kendini sınamak için küçük bir alıştırma var.</p>
+  <nav class="topic-nav" id="topic-nav" aria-label="Konular"></nav>
+  <div id="topics" aria-busy="true" style="display: flex; flex-direction: column; gap: 16px;"></div>
+</main>
+</body>
+</html>
