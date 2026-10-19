@@ -60,8 +60,14 @@ olmak üzere üç seviyeye ayırır. Üstteki seviye çubuğundan istenen bölü
 
 Her konuda kısa Türkçe açıklama, yapı kalıbı ve örnek cümleler (EN + TR) vardır;
 altındaki çoktan seçmeli alıştırmada seçim yapıldığında doğru cevap ve kısa bir
-açıklama gösterilir. İçerik tamamen istemci tarafındadır; sunucuya ihtiyaç duymaz
-ve çevrimdışı da açılır.
+açıklama gösterilir.
+
+Sayfanın en altında **Genel Test** vardır: bütün konuların sorularından rastgele
+10/15/20 soru seçer, şıkları karıştırır, soruları tek tek sorar ve puan tutar.
+Sonunda doğru sayısı, yüzde ve kısa bir değerlendirme gösterilir (klavye: 1–4 şık
+seçer, Enter sonraki soruya geçer).
+
+İçerik tamamen istemci tarafındadır; sunucuya ihtiyaç duymaz ve çevrimdışı da açılır.
 
 ## İstatistik
 

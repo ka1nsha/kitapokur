@@ -675,6 +675,177 @@ function buildNav() {
     ]);
     nav.append(chip);
   }
+  nav.append(el("a", { class: "level-chip exam-chip", href: "#exam-top", text: "Genel Test" }));
+}
+
+// --- Genel test ------------------------------------------------------------
+// Bütün konuların sorularından rastgele seçip tek tek sorar, puan tutar.
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Her sorunun kaynağı konu etiketiyle birlikte düz bir listeye alınır.
+function allQuestions() {
+  const out = [];
+  for (const t of TOPICS) {
+    for (const item of t.quiz) {
+      out.push({ ...item, topic: t.tr, correct: item.opts[item.answer] });
+    }
+  }
+  return out;
+}
+
+const exam = { questions: [], idx: 0, score: 0, answered: false, count: 15, keys: null };
+
+function startExam() {
+  const pool = allQuestions();
+  exam.questions = shuffle(pool).slice(0, Math.min(exam.count, pool.length)).map((q) => ({
+    ...q, opts: shuffle(q.opts),  // şıkları da karıştır
+  }));
+  exam.idx = 0;
+  exam.score = 0;
+  exam.answered = false;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const body = document.getElementById("exam-body");
+  body.textContent = "";
+  const total = exam.questions.length;
+  const q = exam.questions[exam.idx];
+
+  const bar = el("div", { class: "exam-bar" }, [
+    el("span", { class: "exam-progress", text: `Soru ${exam.idx + 1} / ${total}` }),
+    el("span", { class: "exam-score", text: `Puan: ${exam.score}` }),
+  ]);
+
+  const [before, after] = q.q.split("___");
+  const line = el("p", { class: "q-text" }, [
+    document.createTextNode(before),
+    el("span", { class: "blank", text: "____" }),
+    document.createTextNode(after ?? ""),
+  ]);
+
+  const tag = el("p", { class: "exam-tag", text: `Konu: ${q.topic}` });
+  const opts = el("div", { class: "opts", role: "group", "aria-label": "Seçenekler" });
+  const feedback = el("p", { class: "q-feedback", role: "status" });
+  const footer = el("div", { class: "exam-footer" });
+
+  exam.answered = false;
+  q.opts.forEach((text) => {
+    const btn = el("button", { type: "button", class: "opt", text });
+    btn.addEventListener("click", () => pick(btn, text, q, opts, feedback, footer));
+    opts.append(btn);
+  });
+
+  body.append(bar, line, tag, opts, feedback, footer);
+  // Klavye: 1–4 şık seçer, Enter/→ sonraki soruya geçer.
+  if (exam.keys) document.removeEventListener("keydown", exam.keys);
+  exam.keys = (e) => {
+    if (e.target.matches("button, a, select, input")) return;
+    if (!exam.answered && /^[1-9]$/.test(e.key)) {
+      const btn = opts.children[Number(e.key) - 1];
+      if (btn) { e.preventDefault(); btn.click(); }
+    } else if (exam.answered && (e.key === "Enter" || e.key === " " || e.key === "ArrowRight")) {
+      const next = footer.querySelector("button");
+      if (next) { e.preventDefault(); next.click(); }
+    }
+  };
+  document.addEventListener("keydown", exam.keys);
+}
+
+function pick(btn, text, q, opts, feedback, footer) {
+  if (exam.answered) return;
+  exam.answered = true;
+  const correct = text === q.correct;
+  if (correct) {
+    exam.score++;
+    const scoreEl = document.querySelector(".exam-score");
+    if (scoreEl) scoreEl.textContent = `Puan: ${exam.score}`;
+  }
+  [...opts.children].forEach((b) => {
+    b.disabled = true;
+    if (b.textContent === q.correct) b.classList.add("right");
+    else if (b === btn) b.classList.add("wrong");
+  });
+  feedback.textContent = (correct ? "Doğru. " : "Yanlış. ") + (q.note || "");
+  feedback.classList.add(correct ? "ok" : "bad");
+
+  const last = exam.idx === exam.questions.length - 1;
+  const nextBtn = el("button", {
+    type: "button", class: "btn btn-primary", text: last ? "Sonucu gör" : "Sonraki",
+  });
+  nextBtn.addEventListener("click", () => {
+    if (last) return showResult();
+    exam.idx++;
+    renderQuestion();
+    document.getElementById("exam-top").scrollIntoView({ block: "start" });
+  });
+  footer.append(nextBtn);
+  nextBtn.focus();
+}
+
+function showResult() {
+  if (exam.keys) { document.removeEventListener("keydown", exam.keys); exam.keys = null; }
+  const body = document.getElementById("exam-body");
+  body.textContent = "";
+  const total = exam.questions.length;
+  const pct = Math.round((exam.score / total) * 100);
+  let msg;
+  if (pct >= 90) msg = "Harika! Konulara çok iyi hâkimsin.";
+  else if (pct >= 70) msg = "İyi iş. Birkaç konuyu gözden geçir, tam olur.";
+  else if (pct >= 50) msg = "Fena değil. Yanlış çıkan konuları tekrar çalış.";
+  else msg = "Başlangıç için iyi. Konulara dönüp tekrar dene.";
+
+  const ring = el("div", { class: "result-score" }, [
+    el("strong", { text: `${exam.score}` }),
+    el("span", { text: ` / ${total}` }),
+  ]);
+  const again = el("button", { type: "button", class: "btn btn-primary", text: "Tekrar dene" });
+  again.addEventListener("click", startExam);
+
+  body.append(
+    el("div", { class: "exam-result" }, [
+      ring,
+      el("p", { class: "result-pct", text: `%${pct} doğru` }),
+      el("p", { class: "result-msg", text: msg }),
+      again,
+    ]),
+  );
+  document.getElementById("exam-top").scrollIntoView({ block: "start" });
+}
+
+function renderExamStart() {
+  const body = document.getElementById("exam-body");
+  body.textContent = "";
+  const total = allQuestions().length;
+
+  const label = el("label", { class: "exam-count", text: "Soru sayısı" });
+  const select = el("select", {});
+  for (const n of [10, 15, 20]) {
+    const opt = el("option", { value: String(n), text: String(n) });
+    if (n === exam.count) opt.selected = true;
+    select.append(opt);
+  }
+  select.addEventListener("change", () => { exam.count = Number(select.value); });
+  label.append(select);
+
+  const start = el("button", { type: "button", class: "btn btn-primary", text: "Teste başla" });
+  start.addEventListener("click", startExam);
+
+  body.append(
+    el("div", { class: "exam-start" }, [
+      el("p", { class: "exam-intro", text:
+        `${total} sorudan rastgele seçilir, şıklar karıştırılır. Her cevaptan sonra doğrusu ve kısa bir açıklama gösterilir.` }),
+      el("div", { class: "exam-controls" }, [label, start]),
+    ]),
+  );
 }
 
 function main() {
@@ -690,6 +861,7 @@ function main() {
     list.append(section);
   }
   list.removeAttribute("aria-busy");
+  renderExamStart();
 }
 
 main();

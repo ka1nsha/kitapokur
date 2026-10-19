@@ -103,6 +103,58 @@
 .q-feedback.ok { color: var(--accent); }
 .q-feedback.bad { color: var(--danger); }
 
+/* --- Genel test ----------------------------------------------------------- */
+
+.exam { display: flex; flex-direction: column; gap: 16px; margin-top: 12px; }
+.exam-chip { border-color: var(--accent); color: var(--accent); }
+.exam-chip:hover { background: var(--accent); color: var(--on-accent); }
+
+.exam-start, .exam-result {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+}
+.exam-start { padding: 20px 22px; gap: 16px; }
+.exam-intro { margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink-2); }
+.exam-controls { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
+.exam-count { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: var(--label); }
+.exam-count select {
+  height: 42px; min-width: 90px; padding: 0 12px; border-radius: 10px;
+  border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); font-size: 15px;
+}
+.exam-controls .btn { min-height: 42px; }
+
+/* Soru kartı */
+#exam-body { display: flex; flex-direction: column; }
+#exam-body > .exam-bar, #exam-body > .q-text, #exam-body > .exam-tag,
+#exam-body > .opts, #exam-body > .q-feedback, #exam-body > .exam-footer {
+  background: var(--surface); border: 1px solid var(--line); border-top: 0;
+  padding-left: 22px; padding-right: 22px;
+}
+#exam-body > .exam-bar {
+  border-top: 1px solid var(--line); border-radius: 16px 16px 0 0;
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 14px; padding-bottom: 14px;
+}
+#exam-body > .q-text { padding-top: 16px; padding-bottom: 4px; }
+#exam-body > .exam-tag { padding-bottom: 12px; }
+#exam-body > .opts { padding-top: 4px; padding-bottom: 12px; }
+#exam-body > .q-feedback:not(:empty) { padding-top: 4px; padding-bottom: 12px; }
+#exam-body > .exam-footer {
+  border-radius: 0 0 16px 16px; padding-top: 4px; padding-bottom: 18px;
+}
+#exam-body > .exam-footer:empty { display: none; }
+
+.exam-progress { font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.exam-score { font-size: 14px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.exam-tag { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .04em; color: var(--label); }
+
+/* Sonuç */
+.exam-result { padding: 28px 22px; gap: 10px; align-items: center; text-align: center; }
+.result-score { font-family: var(--serif); line-height: 1; color: var(--ink); }
+.result-score strong { font-size: 52px; font-weight: 600; color: var(--accent); }
+.result-score span { font-size: 26px; color: var(--ink-3); }
+.result-pct { margin: 0; font-size: 15px; font-weight: 600; color: var(--ink-2); }
+.result-msg { margin: 0 0 6px; font-size: 15px; color: var(--ink-3); max-width: 420px; }
+
 @media (max-width: 640px) {
   .grammar-page { padding: 12px 12px 40px; gap: 12px; }
   #topics { gap: 22px; }
@@ -112,4 +164,10 @@
   .struct-row { flex-direction: column; gap: 2px; }
   .struct-label { flex: none; }
   .opt { flex: 1 1 100%; }
+  .exam-start { padding: 16px; }
+  #exam-body > .exam-bar, #exam-body > .q-text, #exam-body > .exam-tag,
+  #exam-body > .opts, #exam-body > .q-feedback, #exam-body > .exam-footer {
+    padding-left: 16px; padding-right: 16px;
+  }
+  .result-score strong { font-size: 44px; }
 }
