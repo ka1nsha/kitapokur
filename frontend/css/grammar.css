@@ -155,6 +155,25 @@
 .result-pct { margin: 0; font-size: 15px; font-weight: 600; color: var(--ink-2); }
 .result-msg { margin: 0 0 6px; font-size: 15px; color: var(--ink-3); max-width: 420px; }
 
+/* Yanlışları gözden geçir */
+.review {
+  margin-top: 16px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: 18px 20px; display: flex; flex-direction: column; gap: 10px;
+}
+.review-title { margin: 0; font-size: 16px; font-weight: 600; color: var(--ink); }
+.review-sub { margin: 0; font-size: 13px; color: var(--ink-3); }
+.review-list { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.review-item {
+  display: flex; flex-direction: column; gap: 4px;
+  padding-left: 14px; border-left: 3px solid var(--danger-line);
+}
+.review-q { margin: 0; font-size: 15px; color: var(--ink-2); }
+.review-q strong { color: var(--accent); font-weight: 600; }
+.review-link { font-size: 14px; font-weight: 600; color: var(--accent); text-decoration: none; }
+.review-link:hover { text-decoration: underline; }
+.review-allok { margin: 0; font-size: 15px; font-weight: 600; color: var(--accent); text-align: center; }
+
 @media (max-width: 640px) {
   .grammar-page { padding: 12px 12px 40px; gap: 12px; }
   #topics { gap: 22px; }

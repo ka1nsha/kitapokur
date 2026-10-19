@@ -695,13 +695,13 @@ function allQuestions() {
   const out = [];
   for (const t of TOPICS) {
     for (const item of t.quiz) {
-      out.push({ ...item, topic: t.tr, correct: item.opts[item.answer] });
+      out.push({ ...item, topic: t.tr, topicId: t.id, correct: item.opts[item.answer] });
     }
   }
   return out;
 }
 
-const exam = { questions: [], idx: 0, score: 0, answered: false, count: 15, keys: null };
+const exam = { questions: [], idx: 0, score: 0, answered: false, count: 15, wrong: [], keys: null };
 
 function startExam() {
   const pool = allQuestions();
@@ -711,7 +711,18 @@ function startExam() {
   exam.idx = 0;
   exam.score = 0;
   exam.answered = false;
+  exam.wrong = [];
   renderQuestion();
+}
+
+// Cümledeki ___ yerine verilen sözcüğü (koyu) koyarak dolu cümle kurar.
+function filledSentence(text, word) {
+  const [before, after] = text.split("___");
+  return [
+    document.createTextNode(before),
+    el("strong", { text: word }),
+    document.createTextNode(after ?? ""),
+  ];
 }
 
 function renderQuestion() {
@@ -768,6 +779,8 @@ function pick(btn, text, q, opts, feedback, footer) {
     exam.score++;
     const scoreEl = document.querySelector(".exam-score");
     if (scoreEl) scoreEl.textContent = `Puan: ${exam.score}`;
+  } else {
+    exam.wrong.push({ q: q.q, correct: q.correct, chosen: text, topic: q.topic, topicId: q.topicId });
   }
   [...opts.children].forEach((b) => {
     b.disabled = true;
@@ -818,6 +831,25 @@ function showResult() {
       again,
     ]),
   );
+
+  if (exam.wrong.length) {
+    const list = el("ul", { class: "review-list" });
+    for (const w of exam.wrong) {
+      list.append(el("li", { class: "review-item" }, [
+        el("p", { class: "review-q" }, filledSentence(w.q, w.correct)),
+        el("a", { class: "review-link", href: `#${w.topicId}`, text: `${w.topic} konusuna git →` }),
+      ]));
+    }
+    body.append(el("div", { class: "review" }, [
+      el("h3", { class: "review-title", text: `Gözden geçir (${exam.wrong.length} yanlış)` }),
+      el("p", { class: "review-sub", text: "Doğru cevaplar koyu gösterildi. Bir konuya dokunarak geri dönebilirsin." }),
+      list,
+    ]));
+  } else {
+    body.append(el("div", { class: "review" }, [
+      el("p", { class: "review-allok", text: "Bütün soruları doğru yaptın. 🎉" }),
+    ]));
+  }
   document.getElementById("exam-top").scrollIntoView({ block: "start" });
 }
 

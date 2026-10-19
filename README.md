@@ -65,7 +65,9 @@ açıklama gösterilir.
 Sayfanın en altında **Genel Test** vardır: bütün konuların sorularından rastgele
 10/15/20 soru seçer, şıkları karıştırır, soruları tek tek sorar ve puan tutar.
 Sonunda doğru sayısı, yüzde ve kısa bir değerlendirme gösterilir (klavye: 1–4 şık
-seçer, Enter sonraki soruya geçer).
+seçer, Enter sonraki soruya geçer). Testin altında **yanlış yaptığın sorular**,
+doğru cevabı dolu cümlede koyu gösterilerek ve ilgili konuya gidiş bağlantısıyla
+listelenir; hepsi doğruysa bir kutlama notu çıkar.
 
 İçerik tamamen istemci tarafındadır; sunucuya ihtiyaç duymaz ve çevrimdışı da açılır.
 
