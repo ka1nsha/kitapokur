@@ -6,7 +6,7 @@
 // - Sürümü sabit dosyalar (PDF.js, yazı tipleri, simgeler, kapaklar): önce önbellek.
 // - API istekleri hiç önbelleğe alınmaz; veriler her zaman sunucudan gelir.
 
-const VERSION = "okur-v4";
+const VERSION = "okur-v5";
 const SHELL = [
   "/", "/index.html", "/reader.html", "/study.html", "/cards.html", "/stats.html", "/grammar.html", "/profiles.html",
   "/css/app.css", "/css/library.css", "/css/reader.css", "/css/study.css", "/css/cards.css", "/css/stats.css",

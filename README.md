@@ -49,12 +49,19 @@ Seçim cihaz başına saklanır ve bütün sayfalara uygulanır.
 
 ## Gramer
 
-Ana menüdeki **Gramer** sayfası, İngilizce dilbilgisinin temel konularını
-(zamanlar, artikeller, çoğullar, karşılaştırma, modal fiiller, zaman/yer
-edatları) kısa Türkçe açıklama, yapı kalıbı ve örnek cümlelerle (EN + TR)
-anlatır. Her konunun altında birkaç çoktan seçmeli alıştırma vardır; seçim
-yapıldığında doğru cevap ve kısa bir açıklama gösterilir. İçerik tamamen
-istemci tarafındadır; sunucuya ihtiyaç duymaz ve çevrimdışı da açılır.
+Ana menüdeki **Gramer** sayfası, İngilizce dilbilgisini **Temel / Orta / İleri**
+olmak üzere üç seviyeye ayırır. Üstteki seviye çubuğundan istenen bölüme atlanır.
+
+- **Temel:** geniş/şimdiki/geçmiş zaman, artikeller, çoğullar, in/on/at, some/any/much/many.
+- **Orta:** present perfect, gelecek zaman, karşılaştırma, modallar, sürekli geçmiş,
+  used to, mastar ve -ing, 1. ve 2. tip koşul cümleleri.
+- **İleri:** past perfect, sürekli yakın geçmiş, edilgen çatı, dolaylı anlatım,
+  ilgi cümlecikleri, 3. tip koşul ve wish, soru ekleri.
+
+Her konuda kısa Türkçe açıklama, yapı kalıbı ve örnek cümleler (EN + TR) vardır;
+altındaki çoktan seçmeli alıştırmada seçim yapıldığında doğru cevap ve kısa bir
+açıklama gösterilir. İçerik tamamen istemci tarafındadır; sunucuya ihtiyaç duymaz
+ve çevrimdışı da açılır.
 
 ## İstatistik
 
