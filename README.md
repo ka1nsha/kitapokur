@@ -1,5 +1,17 @@
 # Okur (KitapOkur)
 
+**TR —** Okur, İngilizce kitaplardan kelime öğrenmek için ev ağında çalışan bir PDF
+okuyucudur. Raspberry Pi üzerinde çalışır; her kitaptan seviyene uygun yeni
+kelimeleri çıkarıp sayfada vurgular ve Google çevirisi, sözlük tanımı, telaffuz ve
+Tatoeba örnek cümleleriyle sunar. FSRS ile flashcard çalışması, üç seviyeli gramer
+sayfası, şifresiz profiller ve telefona kurulabilen (PWA) bir arayüz içerir.
+
+**EN —** Okur is a self-hosted PDF reader for learning English vocabulary from books,
+built to run on a Raspberry Pi over the home network. It extracts level-appropriate
+new words from each book, highlights them, and shows translations, dictionary
+definitions, pronunciation and Tatoeba examples. It includes FSRS flashcards,
+a three-level grammar page, passwordless profiles and an installable PWA interface.
+
 Raspberry Pi üzerinde çalışan, ev ağından erişilen, İngilizce kitaplardan kelime
 öğrenmek için bir PDF okuyucu. Her kitap için kaldığın yeri sunucuda saklar;
 telefondan bırakıp bilgisayardan devam edebilirsin.
