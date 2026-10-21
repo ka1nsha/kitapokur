@@ -1,14 +1,48 @@
 # Okur (KitapOkur)
 
-Raspberry Pi üzerinde çalışan, ev ağından erişilen PDF okuyucu. Her kitap için
-kaldığın yeri sunucuda saklar; telefondan bırakıp bilgisayardan devam edebilirsin.
+Raspberry Pi üzerinde çalışan, ev ağından erişilen, İngilizce kitaplardan kelime
+öğrenmek için bir PDF okuyucu. Her kitap için kaldığın yeri sunucuda saklar;
+telefondan bırakıp bilgisayardan devam edebilirsin.
+
+![Okuyucu](docs/screenshots/reader.jpg)
 
 1. Kütüphane, PDF yükleme, okuyucu, kitap bazında kaldığın yer.
 2. Kelime çıkarma, seviye filtresi, kelime paneli ve sayfa üzerinde vurgular.
 3. Google çevirisi, türlere göre anlamlar, tanım, telaffuz ve Tatoeba örnek cümleleri.
-4. FSRS ile flashcard çalışma (klasik, tersten, boşluk doldurma).
-5. Şifresiz profiller: kitaplık ortak, her kişinin ilerlemesi ayrı.
-6. İçindekiler ve PDF içi bağlantılar, kart tarayıcısı ve elle kart ekleme, telefona kurulum (PWA).
+4. FSRS ile flashcard çalışma (klasik, tersten, boşluk doldurma, çoktan seçmeli).
+5. Üç seviyeli gramer sayfası ve puanlı genel test.
+6. Şifresiz profiller: kitaplık ortak, her kişinin ilerlemesi ayrı.
+7. İçindekiler ve PDF içi bağlantılar, kart tarayıcısı ve elle kart ekleme, telefona kurulum (PWA).
+
+## Ekran görüntüleri
+
+**Kütüphane** — kaldığın yerden devam, bugünkü çalışma özeti ve kitap rafı.
+
+![Kütüphane](docs/screenshots/library.jpg)
+
+**Kelime kartı** — Türkçe karşılık, kitaptaki cümle, İngilizce tanım, IPA, Tatoeba örneği ve durum düğmeleri.
+
+![Kelime kartı](docs/screenshots/word-card.jpg)
+
+**Çalışma (çoktan seçmeli)** — FSRS zamanlı flashcard; klasik, tersten, boşluk doldurma, çoktan seçmeli ve karışık modlar.
+
+![Çalışma](docs/screenshots/study.jpg)
+
+**Gramer** — Temel / Orta / İleri seviyelerde konular, örnek cümleler ve çoktan seçmeli alıştırmalar.
+
+![Gramer](docs/screenshots/grammar.jpg)
+
+**İstatistik** — günlük seri, son 30 günün geçmişi, 14 günlük tahmin, kart ve kelime dağılımı.
+
+![İstatistik](docs/screenshots/stats.jpg)
+
+**Gece okuma modu ve karanlık tema**
+
+![Gece okuma modu](docs/screenshots/reader-night.jpg)
+
+**Profiller** — şifresiz; kitaplık ortak, ilerleme kişiye özel.
+
+![Profiller](docs/screenshots/profiles.jpg)
 
 ## İçindekiler ve bağlantılar
 
@@ -233,12 +267,17 @@ Windows'ta tarayıcıdan `http://localhost:8000` adresini aç. API belgeleri:
 
 ```bash
 sudo apt install python3-venv
-git clone <depo> ~/KitapOkur     # ya da klasörü kopyala
+git clone https://github.com/ka1nsha/kitapokur.git ~/KitapOkur   # ya da klasörü kopyala
 cd ~/KitapOkur
 ./run.sh                          # ilk çalıştırmada sanal ortamı kurar
 ```
 
-Ev ağındaki diğer cihazlardan `http://raspberrypi.local:8000` adresine gir.
+Ev ağındaki diğer cihazlardan `http://raspberrypi.local:8000` (ya da Pi'nin IP'si,
+ör. `http://192.168.1.59:8000`) adresine gir.
+
+> 32-bit Raspberry Pi OS'ta (armv7l) bile bağımlılıkların tamamı
+> [piwheels](https://www.piwheels.org) üzerinden hazır wheel olarak kurulur;
+> kaynaktan derleme gerekmez. Python 3.13 ile test edilmiştir.
 
 Açılışta otomatik başlatmak için:
 
